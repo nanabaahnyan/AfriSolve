@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% block title %}{{ problem.title }} — AfriSolve{% endblock %}
+{% block content %}
+<div class="page-container" style="padding-top:2rem;padding-bottom:3rem;">
+
+  <!-- Back + Status Row -->
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.75rem;flex-wrap:wrap;gap:1rem;">
+    <a href="{% url 'problems:list' %}" style="display:flex;align-items:center;gap:0.4rem;color:var(--accent);font-weight:600;text-decoration:none;font-size:0.9rem;">
+      <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+      </svg>
+      Back to Board
+    </a>
+    <div style="display:flex;gap:0.5rem;">
+      <span class="badge badge-primary">{{ problem.category }}</span>
+      <span class="badge {% if problem.status == 'open' %}badge-success{% else %}badge-warning{% endif %}">
+        {{ problem.status|title }}
+      </span>
+    </div>
+  </div>
+
+  <!-- Main Card -->
+  <div class="card" style="padding:2.5rem;margin-bottom:2rem;">
+    <!-- Meta -->
+    <div style="display:flex;flex-wrap:wrap;gap:0.5rem;align-items:center;margin-bottom:1.25rem;font-size:0.85rem;color:var(--text-muted);">
+      <span style="background:var(--accent-light);color:var(--accent);padding:0.25rem 0.6rem;border-radius:6px;font-weight:700;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;">
+        {{ problem.category }}
+      </span>
+      <span>•</span>
+      <span>📍 {{ problem.location|default:"Remote" }}</span>
+      <span>•</span>
+      <span>Posted by <strong style="color:var(--text-primary);">{{ problem.poster.username }}</strong></span>
+    </div>
+
+    <h1 style="font-size:clamp(1.5rem,3vw,2.25rem);font-weight:800;color:var(--text-primary);margin-bottom:1.5rem;line-height:1.2;">
+      {{ problem.title }}
+    </h1>
+
+    <h3 style="font-size:1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.75rem;">Project Overview</h3>
+    <p style="color:var(--text-secondary);line-height:1.75;white-space:pre-wrap;margin-bottom:2rem;">{{ problem.description }}</p>
+
+    {% if problem.business_impact %}
+    <div style="background:linear-gradient(135deg,var(--accent-light),transparent);border:1px solid var(--border);border-radius:16px;padding:1.5rem;margin-bottom:2rem;">
+      <h4 style="font-weight:800;color:var(--accent);margin-bottom:0.5rem;display:flex;align-items:center;gap:0.5rem;">
+        🚀 Potential Business Impact
+      </h4>
+      <p style="color:var(--text-secondary);font-style:italic;line-height:1.7;">"{{ problem.business_impact }}"</p>
+    </div>
+    {% endif %}
+
+    <!-- Action Section -->
+    <div style="border-top:1px solid var(--border);padding-top:2rem;">
+      {% if request.user.is_authenticated %}
+        {% if request.user == problem.poster %}
+          <p style="color:var(--text-muted);font-style:italic;text-align:center;padding:1rem;background:var(--bg-secondary);border-radius:12px;">
+            You posted this problem.
+          </p>
+        {% elif request.user.role == 'developer' and problem.status == 'open' %}
+          {% if user_has_applied %}
+            <p style="color:var(--text-muted);text-align:center;padding:1rem;background:var(--bg-secondary);border-radius:12px;font-weight:600;">
+              ✅ Your application has been submitted. We'll notify you when there's an update.
+            </p>
+          {% else %}
+            <!-- Apply Toggle -->
+            <div style="text-align:center;" id="apply-section">
+              <button onclick="document.getElementById('apply-form-box').style.display='block';this.style.display='none';"
+                class="btn btn-primary" style="padding:1rem 3rem;font-size:1.05rem;">
+                Apply to Solve This Problem
+              </button>
+            </div>
+            <div id="apply-form-box" style="display:none;background:var(--bg-secondary);border-radius:16px;border:1px solid var(--border);padding:2rem;">
+              <h3 style="font-size:1.2rem;font-weight:800;margin-bottom:1.5rem;color:var(--text-primary);">Submit Your Proposal</h3>
+              <form method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                  <label class="form-label">Estimated Duration</label>
+                  <input type="text" name="estimated_duration" required placeholder="E.g., 3 weeks, 2 months" class="form-control">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Proposed Approach / Message</label>
+                  <textarea name="message" rows="4" placeholder="Briefly explain how you plan to tackle this..." class="form-control"></textarea>
+                </div>
+                <div style="display:flex;justify-content:flex-end;gap:0.75rem;margin-top:1rem;">
+                  <button type="button" class="btn btn-secondary"
+                    onclick="document.getElementById('apply-form-box').style.display='none';document.querySelector('#apply-section button').style.display='';">
+                    Cancel
+                  </button>
+                  <button type="submit" class="btn btn-primary">Submit Application</button>
+                </div>
+              </form>
+            </div>
+          {% endif %}
+        {% elif request.user.role == 'poster' %}
+          <p style="color:var(--text-muted);font-style:italic;text-align:center;padding:1rem;background:var(--bg-secondary);border-radius:12px;">
+            You are logged in as a Poster. Only Developers can apply.
+          </p>
+        {% endif %}
+      {% else %}
+        <div style="text-align:center;">
+          <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-primary" style="padding:1rem 3rem;font-size:1.05rem;">
+            Log In to Apply
+          </a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  {% for message in messages %}
+  <div class="alert alert-{{ message.tags }}" style="margin-bottom:1rem;">{{ message }}</div>
+  {% endfor %}
+</div>
+
+<!-- Floating Chat Button -->
+{% if is_authorized_chat %}
+<a href="{% url 'problems:chat' problem.pk %}"
+  style="position:fixed;bottom:2rem;right:2rem;z-index:50;background:var(--accent);color:#fff;width:4rem;height:4rem;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(99,102,241,0.4);transition:transform 0.2s,box-shadow 0.2s;text-decoration:none;"
+  title="Go to project chat"
+  onmouseover="this.style.transform='scale(1.1)';this.style.boxShadow='0 12px 32px rgba(99,102,241,0.5)'"
+  onmouseout="this.style.transform='scale(1)';this.style.boxShadow='0 8px 24px rgba(99,102,241,0.4)'">
+  <svg width="26" height="26" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+  </svg>
+</a>
+{% endif %}
+{% endblock %}

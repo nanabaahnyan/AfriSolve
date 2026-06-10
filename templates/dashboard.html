@@ -1,0 +1,614 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - AfriSolve Hub{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 2.5rem;">
+    <h1 style="font-size: 2.5rem; margin-bottom: 0.25rem;">
+        {% if is_admin %}System Administration{% elif is_developer %}Developer Dashboard{% else %}Poster Dashboard{% endif %}
+    </h1>
+    <p style="color: var(--text-muted);">
+        Welcome back, <strong style="color: var(--text);">{{ request.user.username }}</strong>
+        <span class="badge badge-completed" style="background-color: var(--primary-light); color: var(--primary); font-weight: bold; margin-left: 0.5rem; vertical-align: middle;">
+            {{ request.user.get_role_display }}
+        </span>
+    </p>
+</div>
+
+<!-- ============================================== -->
+<!-- ADMIN DASHBOARD SECTION                        -->
+<!-- ============================================== -->
+{% if is_admin %}
+<div class="stats-grid">
+    <div class="stat-card" style="cursor: pointer;" onclick="fetchAdminDetails('users')">
+        <div style="font-size: 2rem;">👥</div>
+        <div class="stat-value">{{ total_users }}</div>
+        <div class="stat-label">Total Users</div>
+    </div>
+    <div class="stat-card" style="cursor: pointer;" onclick="fetchAdminDetails('problems')">
+        <div style="font-size: 2rem;">🔍</div>
+        <div class="stat-value">{{ active_problems }}</div>
+        <div class="stat-label">Active Problems</div>
+    </div>
+    <div class="stat-card" style="cursor: pointer;" onclick="fetchAdminDetails('completed')">
+        <div style="font-size: 2rem;">✅</div>
+        <div class="stat-value">{{ completed_problems }}</div>
+        <div class="stat-label">Completed Projects</div>
+    </div>
+    <div class="stat-card" style="cursor: pointer;" onclick="fetchAdminDetails('teams')">
+        <div style="font-size: 2rem;">🚀</div>
+        <div class="stat-value">{{ teams_created }}</div>
+        <div class="stat-label">Teams Created</div>
+    </div>
+</div>
+
+<!-- Admin Explorer Card (Dynamic AJAX loading) -->
+<div class="card" id="admin-explorer-card" style="display: none; padding: 0;">
+    <div style="display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 2rem; border-bottom: 2px solid var(--border); background-color: var(--background);">
+        <h3 id="explorer-title" style="font-size: 1.25rem; text-transform: capitalize;">Explorer</h3>
+        <button onclick="document.getElementById('admin-explorer-card').style.display = 'none';" class="btn btn-secondary" style="padding: 0.35rem 0.75rem;">Close</button>
+    </div>
+    <div class="table-responsive">
+        <table class="table" id="explorer-table">
+            <thead id="explorer-thead"></thead>
+            <tbody id="explorer-tbody"></tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Pending Developer Proposals (Applications) -->
+<div class="card" style="padding: 0;">
+    <div style="padding: 1.5rem 2rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background-color: var(--background); border-top-left-radius: var(--radius-lg); border-top-right-radius: var(--radius-lg);">
+        <div>
+            <h3 style="font-size: 1.3rem;">Developer Proposals</h3>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.25rem;">Review and assign applications for open projects</p>
+        </div>
+        <span class="badge badge-assigned">{{ pending_approvals|length }} Pending</span>
+    </div>
+    <div style="display: flex; flex-direction: column;">
+        {% if pending_approvals %}
+            {% for app in pending_approvals %}
+                <div style="padding: 2rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem;" class="proposal-item">
+                    <div style="flex: 1; min-width: 250px;">
+                        <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
+                            <a href="{% url 'user_detail' app.developer.id %}" style="font-size: 1.1rem; font-weight: 850; color: var(--primary); text-decoration: none;">
+                                @{{ app.developer.username }}
+                            </a>
+                            <span class="badge badge-open" style="font-size: 0.65rem;">Proposal</span>
+                        </div>
+                        <p style="color: var(--text); font-size: 1rem; margin-bottom: 0.75rem;">
+                            Project: <strong>{{ app.problem.title }}</strong>
+                        </p>
+                        <div style="display: flex; gap: 2rem; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+                            <span>⏳ Duration: <strong>{{ app.estimated_duration }}</strong></span>
+                            <span>📅 Submitted: <strong>{{ app.created_at|date:"M d, Y" }}</strong></span>
+                        </div>
+                        {% if app.message %}
+                            <div style="background-color: var(--background); padding: 1rem; border-radius: var(--radius-md); font-style: italic; font-size: 0.9rem;">
+                                "{{ app.message }}"
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem; min-width: 150px;">
+                        <button onclick="handleApplicationAction({{ app.id }}, 'approve')" class="btn btn-primary">Approve Proposal</button>
+                        <button onclick="handleApplicationAction({{ app.id }}, 'reject')" class="btn btn-secondary">Reject</button>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div style="text-align: center; padding: 4rem; color: var(--text-muted); font-style: italic;">
+                ✨ Clean Slate! No pending proposals to review.
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Pending Team Approvals -->
+{% if pending_teams %}
+<div class="card" style="padding: 0; margin-top: 2rem; border-color: var(--accent);">
+    <div style="padding: 1.5rem 2rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background-color: var(--background); border-top-left-radius: var(--radius-lg); border-top-right-radius: var(--radius-lg);">
+        <div>
+            <h3 style="font-size: 1.3rem;">Team Registrations</h3>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.25rem;">Review and approve newly created developer teams</p>
+        </div>
+        <span class="badge badge-assigned">{{ pending_teams|length }} Pending</span>
+    </div>
+    <div style="display: flex; flex-direction: column;">
+        {% for team in pending_teams %}
+            <div style="padding: 2rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: start; flex-wrap: wrap; gap: 1.5rem;">
+                <div style="flex: 1; min-width: 250px;">
+                    <h4 style="font-size: 1.4rem; margin-bottom: 0.5rem; color: var(--text);">{{ team.name }}</h4>
+                    <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1rem;">{{ team.description }}</p>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+                        👑 Team Leader: <strong style="color: var(--primary);">@{{ team.leader.username }}</strong>
+                    </p>
+                    <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                        <span class="badge badge-open">Leader: {{ team.leader.username }}</span>
+                        {% for invite in team.invitations.all %}
+                            {% if invite.status == 'accepted' %}
+                                <span class="badge badge-completed">{{ invite.invitee.username }}</span>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <div style="display: flex; flex-direction: column; gap: 0.5rem; min-width: 150px;">
+                    <button onclick="handleTeamAction({{ team.id }}, 'approve')" class="btn btn-primary">Approve Team</button>
+                    <button onclick="handleTeamAction({{ team.id }}, 'reject')" class="btn btn-danger">Reject</button>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<!-- ============================================== -->
+<!-- DEVELOPER DASHBOARD SECTION                    -->
+<!-- ============================================== -->
+{% elif is_developer %}
+<div class="dashboard-tabs">
+    <button class="tab-btn active" onclick="switchDevTab('overview')">📊 Analytics</button>
+    <button class="tab-btn" onclick="switchDevTab('projects')">📋 Projects ({{ projects|length }})</button>
+    <button class="tab-btn" onclick="switchDevTab('teams')">👥 My Teams ({{ teams|length }})</button>
+</div>
+
+<!-- Overview/Analytics Tab -->
+<div id="dev-tab-overview" class="dev-tab-content animate-fade">
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div style="font-size: 2rem;">📋</div>
+            <div class="stat-value">{{ total_projects }}</div>
+            <div class="stat-label">Total Projects</div>
+        </div>
+        <div class="stat-card">
+            <div style="font-size: 2rem;">✅</div>
+            <div class="stat-value">{{ completed_projects }}</div>
+            <div class="stat-label">Completed</div>
+        </div>
+        <div class="stat-card">
+            <div style="font-size: 2rem;">⚡</div>
+            <div class="stat-value">{{ in_progress_projects }}</div>
+            <div class="stat-label">In Progress</div>
+        </div>
+        <div class="stat-card">
+            <div style="font-size: 2rem;">📊</div>
+            <div class="stat-value">{{ avg_progress }}%</div>
+            <div class="stat-label">Avg. Progress</div>
+        </div>
+    </div>
+
+    <!-- Rating + Advice Grid -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 2rem; flex-wrap: wrap;">
+        <!-- Score Card -->
+        <div class="card" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
+            <h3 style="font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em; margin-bottom: 1rem;">Developer Rating</h3>
+            <div style="display: flex; gap: 0.25rem; font-size: 2.2rem; color: #f59e0b; margin-bottom: 0.7rem;">
+                {% for i in stars_range %}
+                    <span>{% if i <= stars %}★{% else %}☆{% endif %}</span>
+                {% endfor %}
+            </div>
+            <div style="font-size: 2.5rem; font-weight: 950; color: var(--text);">{{ stars }} <span style="font-size: 1.2rem; color: var(--text-muted);">/ 5</span></div>
+            <p style="color: var(--text-muted); font-size: 0.9rem; font-weight: bold; text-transform: uppercase; margin-top: 0.5rem; letter-spacing: 0.05em;">
+                {% if stars == 5 %}Legendary Developer{% elif stars == 4 %}Expert Solver{% elif stars == 3 %}Proficient Solver{% else %}Rising Contributor{% endif %}
+            </p>
+        </div>
+
+        <!-- AI Advice Box -->
+        <div class="card" style="background: linear-gradient(135deg, var(--primary), var(--accent)); color: white; border: none; display: flex; gap: 1.5rem; padding: 2.5rem;">
+            <div style="font-size: 3.5rem; line-height: 1;">{{ advice.icon }}</div>
+            <div>
+                <h3 style="font-size: 1.5rem; margin-bottom: 0.5rem; font-weight: 800;">{{ advice.title }}</h3>
+                <p style="opacity: 0.9; font-size: 1rem; line-height: 1.5;">{{ advice.text }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Projects Tab -->
+<div id="dev-tab-projects" class="dev-tab-content animate-fade" style="display: none;">
+    {% if projects %}
+        {% for project in projects %}
+            <div class="card" style="padding: 2rem; display: flex; flex-direction: column; gap: 1rem;">
+                <div style="display: flex; justify-content: space-between; align-items: start; flex-wrap: wrap; gap: 1rem;">
+                    <div>
+                        <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
+                            <h3 style="font-size: 1.4rem;">{{ project.title }}</h3>
+                            <span class="badge {% if project.status == 'completed' %}badge-completed{% elif project.status == 'open' %}badge-open{% else %}badge-assigned{% endif %}">
+                                {{ project.get_status_display }}
+                            </span>
+                        </div>
+                        <p style="color: var(--text-muted); font-size: 0.9rem;">
+                            Poster: <strong>@{{ project.poster.username }}</strong> | Category: <strong>{{ project.category|default:"General" }}</strong>
+                        </p>
+                    </div>
+                    <a href="{% url 'problems:detail' project.id %}" class="btn btn-secondary" style="padding: 0.5rem 1.25rem;">View Details &rarr;</a>
+                </div>
+
+                <!-- Progress Slider Display -->
+                <div style="margin-top: 1rem;">
+                    <div style="display: flex; justify-content: space-between; font-weight: 700; font-size: 0.9rem; margin-bottom: 0.5rem;">
+                        <span>Completion Progress</span>
+                        <span style="color: var(--primary);">{{ project.current_progress|default:0 }}%</span>
+                    </div>
+                    <div style="background-color: var(--background); height: 10px; border-radius: 5px; overflow: hidden; position: relative;">
+                        <div style="background-color: var(--primary); width: {{ project.current_progress|default:0 }}%; height: 100%; transition: width 0.8s;"></div>
+                    </div>
+                </div>
+
+                <!-- Update Progress Form -->
+                {% if project.status == 'assigned' or project.status == 'in_progress' %}
+                    <div style="border-top: 1px solid var(--border); padding-top: 1rem; margin-top: 0.5rem;">
+                        <button onclick="toggleProgressForm({{ project.id }})" class="btn btn-secondary" style="padding: 0.4rem 1rem; font-size: 0.85rem;">Update Progress</button>
+                        
+                        <form id="progress-form-{{ project.id }}" style="display: none; margin-top: 1rem; background-color: var(--background); padding: 1.5rem; border-radius: var(--radius-md);" method="POST" action="{% url 'problems:progress_create' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="problem" value="{{ project.id }}">
+                            
+                            <div class="form-group">
+                                <label class="form-label">Completion Status</label>
+                                <select name="percentage" class="form-control">
+                                    <option value="0" {% if project.current_progress == 0 %}selected{% endif %}>0% - Accepted terms</option>
+                                    <option value="30" {% if project.current_progress == 30 %}selected{% endif %}>30% - Layout / Planning complete</option>
+                                    <option value="50" {% if project.current_progress == 50 %}selected{% endif %}>50% - Halfway code complete</option>
+                                    <option value="80" {% if project.current_progress == 80 %}selected{% endif %}>80% - Core features implemented / Testing</option>
+                                    <option value="100" {% if project.current_progress == 100 %}selected{% endif %}>100% - Fully Finished / Deliverables ready</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Progress Note</label>
+                                <textarea name="note" required class="form-control" rows="3" placeholder="Explain what milestones were reached..."></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Submit Progress Log</button>
+                        </form>
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="card" style="text-align: center; padding: 4rem; color: var(--text-muted);">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">📭</div>
+            <h3>No Projects Assigned Yet</h3>
+            <p style="margin-bottom: 1.5rem; font-size: 0.95rem;">You haven't been assigned to any projects yet.</p>
+            <a href="{% url 'problems:list' %}" class="btn btn-primary">Browse Open Problems</a>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Teams Tab -->
+<div id="dev-tab-teams" class="dev-tab-content animate-fade" style="display: none;">
+    <!-- Pending Invitations -->
+    {% if invitations %}
+        <div style="background-color: var(--warning-bg); border: 1px solid var(--border); padding: 1.5rem; border-radius: var(--radius-lg); margin-bottom: 2rem;">
+            <h3 style="font-size: 1.1rem; color: var(--warning); margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.05em;">📬 Pending Invitations ({{ invitations|length }})</h3>
+            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                {% for inv in invitations %}
+                    <div style="background-color: var(--card-bg); padding: 1rem 1.5rem; border-radius: var(--radius-md); border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                        <div>
+                            <strong style="font-size: 1.1rem; color: var(--text);">{{ inv.team.name }}</strong>
+                            <p style="color: var(--text-muted); font-size: 0.85rem;">Invited by: @{{ inv.team.leader.username }}</p>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button onclick="handleInvitation({{ inv.id }}, 'accept')" class="btn btn-primary" style="padding: 0.4rem 1rem; font-size: 0.85rem;">Accept</button>
+                            <button onclick="handleInvitation({{ inv.id }}, 'decline')" class="btn btn-secondary" style="padding: 0.4rem 1rem; font-size: 0.85rem; color: var(--danger);">Decline</button>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h3 style="font-size: 1.4rem;">Your Collaboration Teams</h3>
+        <a href="{% url 'teams:create' %}" class="btn btn-primary">+ Create New Team</a>
+    </div>
+
+    {% if teams %}
+        <div class="grid grid-cols-2">
+            {% for team in teams %}
+                <div class="card" style="margin-bottom: 0; padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between; height: 100%;">
+                    <div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; align-items: start;">
+                            <h4 style="font-size: 1.25rem;">{{ team.name }}</h4>
+                            <span class="badge {% if team.status == 'active' %}badge-completed{% elif team.status == 'draft' %}badge-open{% else %}badge-assigned{% endif %}">
+                                {{ team.get_status_display }}
+                            </span>
+                        </div>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">
+                            {{ team.description|truncatewords:20 }}
+                        </p>
+                    </div>
+                    <div style="border-top: 1px solid var(--border); padding-top: 0.75rem; display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 0.85rem; color: var(--text-muted);">
+                            👑 Lead: <strong>@{{ team.leader.username }}</strong>
+                        </span>
+                        <a href="{% url 'teams:detail' team.id %}" style="font-weight: 700; color: var(--primary); text-decoration: none; font-size: 0.9rem;">View Team &rarr;</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="card" style="text-align: center; padding: 4rem; color: var(--text-muted);">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">👥</div>
+            <h3>No Active Teams</h3>
+            <p style="margin-bottom: 1.5rem; font-size: 0.95rem;">Collaborate with other developers by creating a team.</p>
+            <a href="{% url 'teams:create' %}" class="btn btn-primary">Create Your First Team</a>
+        </div>
+    {% endif %}
+</div>
+
+<!-- ============================================== -->
+<!-- POSTER DASHBOARD SECTION                       -->
+<!-- ============================================== -->
+{% else %}
+<div class="stats-grid">
+    <div class="stat-card">
+        <div style="font-size: 2rem;">📋</div>
+        <div class="stat-value">{{ total_posted }}</div>
+        <div class="stat-label">Problems Posted</div>
+    </div>
+    <div class="stat-card">
+        <div style="font-size: 2rem;">✅</div>
+        <div class="stat-value">{{ completed_projects|length }}</div>
+        <div class="stat-label">Completed</div>
+    </div>
+    <div class="stat-card">
+        <div style="font-size: 2rem;">⚡</div>
+        <div class="stat-value">{{ in_development|length }}</div>
+        <div class="stat-label">In Development</div>
+    </div>
+    <div class="stat-card">
+        <div style="font-size: 2rem;">🔍</div>
+        <div class="stat-value">{{ open_problems|length }}</div>
+        <div class="stat-label">Open / Awaiting</div>
+    </div>
+</div>
+
+<div style="display: flex; justify-content: flex-end; margin-bottom: 2rem;">
+    <a href="{% url 'problems:post' %}" class="btn btn-primary" style="font-weight: 800;">+ Post New Problem</a>
+</div>
+
+<!-- Active/In Progress list -->
+<div class="card" style="padding: 0; margin-bottom: 2rem;">
+    <div style="padding: 1.25rem 2rem; border-bottom: 1px solid var(--border); background-color: var(--background); border-top-left-radius: var(--radius-lg); border-top-right-radius: var(--radius-lg);">
+        <h3 style="font-size: 1.25rem;">Projects in Development ({{ in_development|length }})</h3>
+    </div>
+    <div style="display: flex; flex-direction: column;">
+        {% if in_development %}
+            {% for project in in_development %}
+                <div style="padding: 1.5rem 2rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                    <div style="flex: 1; min-width: 250px;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                            <h4 style="font-size: 1.2rem;">{{ project.title }}</h4>
+                            <span class="badge badge-assigned">{{ project.get_status_display }}</span>
+                        </div>
+                        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 0.75rem;">
+                            Assigned Dev: <strong>@{{ project.assigned_developer.username }}</strong>
+                        </p>
+                        <!-- Progress status -->
+                        <div style="background-color: var(--background); height: 6px; border-radius: 3px; overflow: hidden; margin-top: 0.5rem; position: relative;">
+                            <div style="background-color: var(--primary); width: {{ project.current_progress|default:0 }}%; height: 100%;"></div>
+                        </div>
+                        <span style="font-size: 0.8rem; font-weight: bold; color: var(--primary); margin-top: 0.25rem; display: inline-block;">{{ project.current_progress|default:0 }}% Complete</span>
+                    </div>
+                    <a href="{% url 'problems:detail' project.id %}" class="btn btn-secondary">Manage Project &rarr;</a>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div style="text-align: center; padding: 3rem; color: var(--text-muted); font-style: italic;">No active projects in development.</div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Open projects list -->
+<div class="card" style="padding: 0; margin-bottom: 2rem;">
+    <div style="padding: 1.25rem 2rem; border-bottom: 1px solid var(--border); background-color: var(--background); border-top-left-radius: var(--radius-lg); border-top-right-radius: var(--radius-lg);">
+        <h3 style="font-size: 1.25rem;">Awaiting Assignment ({{ open_problems|length }})</h3>
+    </div>
+    <div style="display: flex; flex-direction: column;">
+        {% if open_problems %}
+            {% for project in open_problems %}
+                <div style="padding: 1.5rem 2rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                    <div>
+                        <h4 style="font-size: 1.2rem; margin-bottom: 0.25rem;">{{ project.title }}</h4>
+                        <p style="color: var(--text-muted); font-size: 0.85rem;">Posted: {{ project.created_at|date:"M d, Y" }}</p>
+                    </div>
+                    <a href="{% url 'problems:detail' project.id %}" class="btn btn-secondary">Review Proposals &rarr;</a>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div style="text-align: center; padding: 3rem; color: var(--text-muted); font-style: italic;">No open posts awaiting assignment.</div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Completed Projects -->
+{% if completed_projects %}
+<div class="card" style="padding: 0;">
+    <div style="padding: 1.25rem 2rem; border-bottom: 1px solid var(--border); background-color: var(--background); border-top-left-radius: var(--radius-lg); border-top-right-radius: var(--radius-lg);">
+        <h3 style="font-size: 1.25rem; color: var(--success);">Completed Projects ({{ completed_projects|length }})</h3>
+    </div>
+    <div style="display: flex; flex-direction: column;">
+        {% for project in completed_projects %}
+            <div style="padding: 1.5rem 2rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                    <h4 style="font-size: 1.2rem; margin-bottom: 0.25rem;">{{ project.title }}</h4>
+                    <p style="color: var(--text-muted); font-size: 0.85rem;">Completed: {{ project.updated_at|date:"M d, Y" }}</p>
+                </div>
+                <a href="{% url 'problems:detail' project.id %}" class="btn btn-secondary">View Project &rarr;</a>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+{% endif %}
+
+<!-- JS Functions -->
+<script>
+    // Tab switching for Developer Dashboard
+    function switchDevTab(tabId) {
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.dev-tab-content').forEach(content => content.style.display = 'none');
+        
+        event.currentTarget.classList.add('active');
+        document.getElementById(`dev-tab-${tabId}`).style.display = 'block';
+    }
+
+    // Toggle developer progress updates form
+    function toggleProgressForm(projectId) {
+        const form = document.getElementById(`progress-form-${projectId}`);
+        form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    }
+
+    // Handle invitation response
+    function handleInvitation(id, action) {
+        fetch(`/api/teams/invitations/${id}/respond/`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({ action: action })
+        })
+        .then(res => {
+            if (res.ok) {
+                alert(`Invitation ${action === 'accept' ? 'accepted' : 'declined'} successfully!`);
+                window.location.reload();
+            } else {
+                res.json().then(data => alert(data.error || 'Failed to respond to invitation'));
+            }
+        });
+    }
+
+    // Handle proposals approvals (for Admin)
+    function handleApplicationAction(appId, action) {
+        fetch(`/api/problems/applications/${appId}/respond/`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({ action: action })
+        })
+        .then(res => {
+            if (res.ok) {
+                alert(`Proposal ${action === 'approve' ? 'approved' : 'rejected'}!`);
+                window.location.reload();
+            } else {
+                res.json().then(data => alert(data.error || 'Failed to process application'));
+            }
+        });
+    }
+
+    // Handle team approvals (for Admin)
+    function handleTeamAction(teamId, action) {
+        fetch(`/api/teams/${teamId}/approve/`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({ action: action })
+        })
+        .then(res => {
+            if (res.ok) {
+                alert(`Team registration ${action === 'approve' ? 'approved' : 'rejected'}!`);
+                window.location.reload();
+            } else {
+                res.json().then(data => alert(data.error || 'Failed to process team'));
+            }
+        });
+    }
+
+    // Admin Explorer AJAX fetches
+    function fetchAdminDetails(type) {
+        const card = document.getElementById('admin-explorer-card');
+        const title = document.getElementById('explorer-title');
+        const thead = document.getElementById('explorer-thead');
+        const tbody = document.getElementById('explorer-tbody');
+        
+        card.style.display = 'block';
+        title.textContent = `${type} explorer`;
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 3rem;">Loading directory data...</td></tr>';
+        
+        let url = '';
+        if (type === 'users') url = '/api/users/all/';
+        else if (type === 'problems') url = '/api/problems/';
+        else if (type === 'completed') url = '/api/problems/';
+        else if (type === 'teams') url = '/api/teams/';
+        
+        fetch(url)
+            .then(res => res.json())
+            .then(data => {
+                const results = data.results || data;
+                tbody.innerHTML = '';
+                
+                if (type === 'users') {
+                    thead.innerHTML = `
+                        <tr>
+                            <th>Username</th>
+                            <th>Role</th>
+                            <th>Date Joined</th>
+                            <th style="text-align: right;">Action</th>
+                        </tr>
+                    `;
+                    results.forEach(user => {
+                        tbody.innerHTML += `
+                            <tr>
+                                <td>
+                                    <strong>${user.username}</strong>
+                                    <div style="font-size: 0.75rem; color: var(--text-muted);">${user.email}</div>
+                                </td>
+                                <td><span class="badge badge-open">${user.role}</span></td>
+                                <td>${new Date(user.date_joined).toLocaleDateString()}</td>
+                                <td style="text-align: right;"><a href="/users/${user.id}/" style="font-weight: bold; color: var(--primary); text-decoration: none;">Manage</a></td>
+                            </tr>
+                        `;
+                    });
+                } else if (type === 'problems' || type === 'completed') {
+                    thead.innerHTML = `
+                        <tr>
+                            <th>Problem Title</th>
+                            <th>Category</th>
+                            <th>Status</th>
+                            <th style="text-align: right;">Action</th>
+                        </tr>
+                    `;
+                    const filtered = type === 'completed' ? results.filter(p => p.status === 'completed') : results.filter(p => p.status !== 'completed');
+                    filtered.forEach(p => {
+                        tbody.innerHTML += `
+                            <tr>
+                                <td><strong>${p.title}</strong></td>
+                                <td>${p.category || 'General'}</td>
+                                <td><span class="badge ${p.status === 'completed' ? 'badge-completed' : 'badge-assigned'}">${p.status}</span></td>
+                                <td style="text-align: right;"><a href="/problems/${p.id}/" style="font-weight: bold; color: var(--primary); text-decoration: none;">Review</a></td>
+                            </tr>
+                        `;
+                    });
+                } else if (type === 'teams') {
+                    thead.innerHTML = `
+                        <tr>
+                            <th>Team Name</th>
+                            <th>Members</th>
+                            <th>Created</th>
+                            <th style="text-align: right;">Action</th>
+                        </tr>
+                    `;
+                    results.forEach(team => {
+                        tbody.innerHTML += `
+                            <tr>
+                                <td><strong>${team.name}</strong></td>
+                                <td>${team.members_count || 0} members</td>
+                                <td>${new Date(team.created_at).toLocaleDateString()}</td>
+                                <td style="text-align: right;"><a href="/teams/${team.id}/" style="font-weight: bold; color: var(--primary); text-decoration: none;">View</a></td>
+                            </tr>
+                        `;
+                    });
+                }
+            })
+            .catch(err => {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--danger); padding: 3rem;">Error loading directory data.</td></tr>';
+            });
+    }
+</script>
+{% endblock %}

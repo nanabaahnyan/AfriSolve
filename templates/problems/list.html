@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}Open Problems — AfriSolve{% endblock %}
+{% block content %}
+<div class="page-container" style="padding-top:2.5rem;padding-bottom:3rem;">
+
+  <!-- Header -->
+  <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:1.5rem;margin-bottom:2.5rem;">
+    <div>
+      <h1 class="section-title" style="margin-bottom:0.4rem;">Open Problems</h1>
+      <p style="color:var(--text-muted);font-size:0.95rem;">Discover challenges that Ghanaians need your skills to solve.</p>
+    </div>
+    <form method="get" action="" style="display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap;">
+      <select name="category" id="category-filter" onchange="this.form.submit()"
+        style="background:var(--card-bg);border:1.5px solid var(--border);color:var(--text-primary);border-radius:10px;padding:0.55rem 1rem;font-size:0.9rem;cursor:pointer;">
+        <option value="">All Categories</option>
+        {% for cat in categories %}
+        <option value="{{ cat }}" {% if selected_category == cat %}selected{% endif %}>{{ cat }}</option>
+        {% endfor %}
+      </select>
+      {% if request.user.is_authenticated and request.user.role == 'poster' %}
+      <a href="{% url 'problems:post' %}" class="btn btn-primary" style="white-space:nowrap;">
+        + Post Problem
+      </a>
+      {% endif %}
+    </form>
+  </div>
+
+  <!-- Problem Cards Grid -->
+  {% if problems %}
+  <div class="grid-3" id="problems-grid">
+    {% for problem in problems %}
+    <div class="card" style="display:flex;flex-direction:column;gap:0;padding:0;overflow:hidden;transition:transform 0.2s,box-shadow 0.2s;">
+      <div style="padding:1.5rem;flex-grow:1;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+          <span class="badge badge-primary">{{ problem.category }}</span>
+          <span class="badge {% if problem.status == 'open' %}badge-success{% else %}badge-warning{% endif %}">
+            {{ problem.status|title }}
+          </span>
+        </div>
+        <h3 style="font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.5rem;line-height:1.35;">
+          {{ problem.title }}
+        </h3>
+        <p style="font-size:0.875rem;color:var(--text-muted);line-height:1.6;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;">
+          {{ problem.description }}
+        </p>
+        <div style="display:flex;align-items:center;gap:0.4rem;margin-top:1rem;font-size:0.8rem;color:var(--text-muted);">
+          <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+          </svg>
+          {{ problem.location|default:"Remote" }}
+        </div>
+      </div>
+      <div style="padding:1rem 1.5rem;border-top:1px solid var(--border);background:var(--bg-secondary);">
+        <a href="{% url 'problems:detail' problem.pk %}"
+          style="display:flex;align-items:center;justify-content:center;gap:0.4rem;font-size:0.875rem;font-weight:700;color:var(--accent);text-decoration:none;transition:gap 0.2s;"
+          onmouseover="this.style.gap='0.7rem'" onmouseout="this.style.gap='0.4rem'">
+          View Details <span>→</span>
+        </a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <!-- Empty State -->
+  <div class="card" style="text-align:center;padding:4rem 2rem;">
+    <div style="font-size:3.5rem;margin-bottom:1rem;opacity:0.4;">🔍</div>
+    <h3 style="font-size:1.2rem;font-weight:700;color:var(--text-primary);margin-bottom:0.5rem;">No problems found</h3>
+    <p style="color:var(--text-muted);font-size:0.9rem;margin-bottom:1.5rem;">
+      {% if selected_category %}Try a different category or view all problems.{% else %}No problems have been posted yet. Check back soon!{% endif %}
+    </p>
+    {% if selected_category %}
+    <a href="{% url 'problems:list' %}" class="btn btn-primary">Clear Filter</a>
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
+
+<style>
+  .card:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(99,102,241,0.12); }
+</style>
+{% endblock %}

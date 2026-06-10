@@ -1,0 +1,492 @@
+{% extends "base.html" %}
+{% block title %}{{ problem.title }} — Chat — AfriSolve{% endblock %}
+{% block extra_head %}
+<style>
+  .chat-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 5rem);
+    overflow: hidden;
+  }
+  .chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.5rem 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    background: var(--bg-secondary);
+  }
+  .msg-bubble {
+    max-width: 65%;
+    padding: 0.75rem 1rem;
+    border-radius: 18px;
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+  .msg-mine { background: var(--accent); color: #fff; border-bottom-right-radius: 4px; align-self: flex-end; }
+  .msg-theirs { background: var(--card-bg); color: var(--text-primary); border: 1px solid var(--border); border-bottom-left-radius: 4px; align-self: flex-start; }
+  .msg-system { align-self: center; max-width: 80%; text-align: center; }
+  .msg-system .bubble-inner {
+    background: var(--accent-light);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 0.75rem 1.25rem;
+    color: var(--accent);
+    font-size: 0.825rem;
+    font-weight: 600;
+  }
+  .meta-row {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.3rem;
+    opacity: 0.7;
+  }
+  .escrow-panel {
+    background: var(--card-bg);
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .escrow-badge {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
+  }
+  .reply-banner {
+    background: var(--accent-light);
+    border-top: 1px solid var(--border);
+    padding: 0.75rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85rem;
+  }
+  .chat-input-bar {
+    background: var(--card-bg);
+    border-top: 1px solid var(--border);
+    padding: 1rem 2rem;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-container" style="padding:0;max-width:100%;">
+  <div class="chat-wrapper">
+
+    <!-- Top bar -->
+    <div style="background:var(--card-bg);border-bottom:1px solid var(--border);padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;">
+      <a href="{% url 'problems:detail' problem.pk %}"
+        style="display:flex;align-items:center;gap:0.5rem;color:var(--accent);font-weight:700;text-decoration:none;background:var(--accent-light);padding:0.5rem 1rem;border-radius:10px;font-size:0.875rem;">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+        </svg>
+        Back to Project
+      </a>
+      <div style="display:flex;align-items:center;gap:1.5rem;">
+        <div style="display:flex;align-items:center;gap:0.5rem;">
+          <div style="width:10px;height:10px;background:#22c55e;border-radius:50%;animation:pulse 2s infinite;"></div>
+          <span style="font-size:0.8rem;font-weight:800;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-primary);">Live Chat</span>
+        </div>
+        {% if escrow %}
+        <button onclick="toggleEscrow()" id="escrow-toggle-btn"
+          style="background:var(--bg-secondary);border:1px solid var(--border);color:var(--text-secondary);font-size:0.75rem;font-weight:700;padding:0.4rem 0.8rem;border-radius:8px;cursor:pointer;">
+          💰 Escrow Panel ▲
+        </button>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Chat header strip -->
+    <div style="background:var(--card-bg);border-bottom:1px solid var(--border);padding:0.85rem 2rem;display:flex;align-items:center;gap:1rem;flex-shrink:0;">
+      <div style="background:var(--accent);color:#fff;padding:0.6rem;border-radius:12px;font-size:1.1rem;">💬</div>
+      <div>
+        <div style="font-weight:800;color:var(--text-primary);font-size:0.95rem;">{{ problem.title }}</div>
+        <div style="font-size:0.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.07em;">Project Conversation</div>
+      </div>
+    </div>
+
+    <!-- Escrow Panel -->
+    <div id="escrow-panel" style="flex-shrink:0;">
+      {% if not escrow %}
+      <div class="escrow-panel">
+        <div style="display:flex;align-items:center;gap:0.75rem;">
+          <span style="font-size:1.5rem;">🤝</span>
+          <div>
+            <div style="font-weight:800;font-size:0.875rem;color:var(--text-primary);">Mutual Security Agreement (Escrow) Pending</div>
+            <div style="font-size:0.775rem;color:var(--text-muted);">
+              {% if is_admin %}
+                Establish the 20% + 20% mutual security escrow after both parties agree on cost in chat.
+              {% else %}
+                Discuss and agree on the project budget here. An admin will set up the Escrow once settled.
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        {% if is_admin %}
+        <button onclick="openProposeModal()" class="btn btn-primary" style="font-size:0.8rem;padding:0.5rem 1.25rem;">
+          Propose Escrow Agreement
+        </button>
+        {% else %}
+        <span style="background:var(--accent-light);color:var(--accent);padding:0.4rem 1rem;border-radius:8px;font-size:0.78rem;font-weight:700;">⌛ Awaiting Admin Setup</span>
+        {% endif %}
+      </div>
+      {% else %}
+      <div class="escrow-panel" id="escrow-details">
+        <div>
+          <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.4rem;">
+            <span style="font-size:1.1rem;">💰</span>
+            <strong style="color:var(--text-primary);font-size:0.875rem;">Escrow: <span style="color:var(--accent);">{{ escrow.agreed_cost|floatformat:0 }} GHS</span></strong>
+            <span class="escrow-badge
+              {% if escrow.status == 'proposed' %}bg-amber-100" style="background:#fef3c7;color:#92400e;border:1px solid #fbbf24;
+              {% elif escrow.status == 'agreed' %}style="background:#dbeafe;color:#1e40af;border:1px solid #60a5fa;
+              {% elif escrow.status == 'fully_funded' %}style="background:#dcfce7;color:#166534;border:1px solid #4ade80;
+              {% elif escrow.status == 'completed' %}style="background:#6366f1;color:#fff;
+              {% else %}style="background:#fee2e2;color:#991b1b;border:1px solid #f87171;
+              {% endif %}">
+              {{ escrow.status|title }}
+            </span>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:1.5rem;font-size:0.78rem;color:var(--text-muted);">
+            <span>Poster Deposit ({{ escrow.poster_deposit|floatformat:0 }} GHS):
+              <strong style="color:{% if escrow.poster_paid %}#22c55e{% else %}#f59e0b{% endif %}">
+                {% if escrow.poster_paid %}🟢 Paid{% else %}🟡 Unpaid{% endif %}
+              </strong>
+            </span>
+            <span>Developer Deposit ({{ escrow.developer_deposit|floatformat:0 }} GHS):
+              <strong style="color:{% if escrow.developer_paid %}#22c55e{% else %}#f59e0b{% endif %}">
+                {% if escrow.developer_paid %}🟢 Paid{% else %}🟡 Unpaid{% endif %}
+              </strong>
+            </span>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">
+          {% if escrow.status == 'proposed' %}
+            {% if escrow.proposed_by.id != request.user.id %}
+            <button onclick="handleAcceptEscrow('{{ escrow.id }}')" class="btn btn-primary" style="font-size:0.8rem;padding:0.5rem 1.25rem;">Accept Escrow Terms</button>
+            {% else %}
+            <span style="font-size:0.8rem;color:var(--text-muted);font-style:italic;">Awaiting other party's acceptance...</span>
+            {% endif %}
+          {% endif %}
+
+          {% if escrow.status == 'agreed' or escrow.status == 'partially_funded' %}
+            {% if is_poster and not escrow.poster_paid %}
+            <button onclick="handlePaystackDeposit(true, '{{ escrow.id }}', {{ escrow.poster_deposit }})" class="btn" style="background:#16a34a;color:#fff;font-size:0.8rem;padding:0.5rem 1.25rem;">
+              Pay 20% Deposit ({{ escrow.poster_deposit|floatformat:0 }} GHS)
+            </button>
+            {% elif is_poster and escrow.poster_paid %}
+            <span style="background:#f0fdf4;color:#166534;border:1px solid #4ade80;padding:0.4rem 0.9rem;border-radius:8px;font-size:0.78rem;font-weight:700;">✓ Your Deposit Secured</span>
+            {% endif %}
+
+            {% if not is_poster and not escrow.developer_paid %}
+              {% if can_pay_dev_deposit %}
+              <button onclick="handlePaystackDeposit(false, '{{ escrow.id }}', {{ escrow.developer_deposit }})" class="btn" style="background:#16a34a;color:#fff;font-size:0.8rem;padding:0.5rem 1.25rem;">
+                Pay 20% Deposit ({{ escrow.developer_deposit|floatformat:0 }} GHS)
+              </button>
+              {% else %}
+              <span style="background:#fffbeb;color:#92400e;border:1px solid #fbbf24;padding:0.4rem 0.9rem;border-radius:8px;font-size:0.78rem;font-weight:700;">
+                ⏳ Awaiting deposit by Team Lead{% if team_info.team_lead_username %} ({{ team_info.team_lead_username }}){% endif %}
+              </span>
+              {% endif %}
+            {% elif not is_poster and escrow.developer_paid %}
+            <span style="background:#f0fdf4;color:#166534;border:1px solid #4ade80;padding:0.4rem 0.9rem;border-radius:8px;font-size:0.78rem;font-weight:700;">✓ Team Deposit Secured</span>
+            {% endif %}
+          {% endif %}
+
+          {% if escrow.status == 'fully_funded' %}
+            {% if is_poster %}
+            {% if escrow.completed_at %}
+            <button onclick="handleReleaseEscrow('{{ escrow.id }}')" class="btn" style="background:#059669;color:#fff;font-size:0.8rem;padding:0.5rem 1.25rem;">Release Escrow & Approve</button>
+            {% else %}
+            <span style="color:var(--text-muted);font-size:0.8rem;font-style:italic;">Work in progress...</span>
+            {% endif %}
+            <button onclick="handleDisputeEscrow('{{ escrow.id }}')" class="btn" style="background:#fee2e2;color:#991b1b;border:1px solid #f87171;font-size:0.8rem;padding:0.5rem 1.25rem;">File Dispute</button>
+            {% else %}
+            {% if escrow.completed_at %}
+            <span style="color:#059669;font-weight:700;font-size:0.82rem;">✓ Deliverables submitted. Awaiting Poster review.</span>
+            {% else %}
+            <span style="color:var(--text-muted);font-size:0.78rem;font-style:italic;">Set progress to 100% in dashboard to initiate review.</span>
+            {% endif %}
+            {% endif %}
+          {% endif %}
+
+          {% if escrow.status == 'completed' %}
+          <span style="color:#059669;font-weight:800;font-size:0.875rem;">🏆 Contract Settled</span>
+          {% endif %}
+
+          {% if escrow.status == 'disputed' %}
+          <span style="color:#dc2626;font-weight:800;font-size:0.875rem;">⚠️ Frozen in Dispute</span>
+          {% endif %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Messages Area -->
+    <div class="chat-messages" id="chat-messages">
+      {% if chat_messages %}
+        {% for msg in chat_messages %}
+          {% if msg.content|slice:":7" == "SYSTEM:" %}
+          <div class="msg-system">
+            <div class="bubble-inner">
+              <div style="font-weight:800;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:0.35rem;opacity:0.8;">📢 System Notification</div>
+              {{ msg.content|slice:"7:" }}
+              <div style="font-size:0.7rem;opacity:0.6;margin-top:0.35rem;">{{ msg.created_at|time:"H:i" }}</div>
+            </div>
+          </div>
+          {% elif msg.sender == request.user %}
+          <div class="msg-mine" style="align-self:flex-end;">
+            <div class="meta-row" style="text-align:right;">You · {{ msg.created_at|time:"H:i" }}</div>
+            <p style="white-space:pre-wrap;margin:0;">{{ msg.content }}</p>
+          </div>
+          {% else %}
+          <div class="msg-theirs" style="align-self:flex-start;">
+            <div class="meta-row">{{ msg.sender.username }} · {{ msg.created_at|time:"H:i" }}</div>
+            <p style="white-space:pre-wrap;margin:0;">{{ msg.content }}</p>
+          </div>
+          {% endif %}
+        {% endfor %}
+      {% else %}
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;opacity:0.4;">
+        <div style="font-size:3.5rem;margin-bottom:1rem;">👋</div>
+        <p style="font-weight:800;font-size:1.1rem;color:var(--text-primary);">Start the conversation!</p>
+        <p style="font-size:0.875rem;color:var(--text-secondary);">Discuss project requirements and share updates here.</p>
+      </div>
+      {% endif %}
+      <div id="chat-end"></div>
+    </div>
+
+    <!-- Reply banner (hidden by default) -->
+    <div class="reply-banner" id="reply-banner" style="display:none;">
+      <div>
+        <div style="font-size:0.7rem;font-weight:800;text-transform:uppercase;letter-spacing:0.07em;color:var(--accent);">Replying to <span id="reply-to-name"></span></div>
+        <div id="reply-to-text" style="color:var(--text-secondary);font-size:0.875rem;max-width:70%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></div>
+      </div>
+      <button onclick="cancelReply()" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:1.25rem;">✕</button>
+    </div>
+
+    <!-- Input bar -->
+    <div class="chat-input-bar">
+      <form id="chat-form" onsubmit="sendMessage(event)" style="display:flex;gap:0.75rem;align-items:center;">
+        {% csrf_token %}
+        <input type="text" id="msg-input" placeholder="Type your message here..."
+          style="flex:1;background:var(--bg-secondary);border:2px solid var(--border);border-radius:14px;padding:0.9rem 1.25rem;color:var(--text-primary);font-size:0.9rem;outline:none;transition:border-color 0.2s;"
+          onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'">
+        <button type="submit" id="send-btn" class="btn btn-primary"
+          style="width:3rem;height:3rem;padding:0;border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+          </svg>
+        </button>
+      </form>
+    </div>
+
+  </div>
+</div>
+
+<!-- Propose Escrow Modal -->
+<div id="propose-modal" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:1rem;">
+  <div class="card" style="max-width:480px;width:100%;padding:2rem;position:relative;">
+    <button onclick="closeProposeModal()" style="position:absolute;top:1rem;right:1rem;background:none;border:none;font-size:1.5rem;color:var(--text-muted);cursor:pointer;">✕</button>
+    <h3 style="font-size:1.35rem;font-weight:800;color:var(--text-primary);margin-bottom:0.25rem;">Propose Escrow Agreement</h3>
+    <p style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.07em;font-weight:700;margin-bottom:1.5rem;">Step 1: Set Agreed Project Value</p>
+    <div class="form-group">
+      <label class="form-label">Agreed Project Cost (GHS)</label>
+      <input type="number" id="agreed-cost-input" min="1" placeholder="E.g., 2500"
+        class="form-control" style="font-size:1.1rem;font-weight:700;"
+        oninput="updateDepositPreview(this.value)">
+    </div>
+    <div style="background:var(--bg-secondary);border:1px solid var(--border);border-radius:12px;padding:1rem;font-size:0.82rem;color:var(--text-secondary);margin-bottom:1.5rem;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:0.4rem;">
+        <span>Poster Deposit (20%):</span>
+        <strong id="poster-dep" style="color:var(--accent);">0 GHS</strong>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:0.4rem;">
+        <span>Developer Deposit (20%):</span>
+        <strong id="dev-dep" style="color:var(--accent);">0 GHS</strong>
+      </div>
+      <div style="display:flex;justify-content:space-between;border-top:1px solid var(--border);padding-top:0.4rem;font-weight:700;color:var(--text-primary);">
+        <span>Total Escrow Security:</span>
+        <strong id="total-dep">0 GHS</strong>
+      </div>
+    </div>
+    <div style="display:flex;gap:0.75rem;">
+      <button onclick="closeProposeModal()" class="btn btn-secondary" style="flex:1;">Cancel</button>
+      <button onclick="submitProposeEscrow()" class="btn btn-primary" style="flex:1;">Propose Terms</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const PROBLEM_ID = {{ problem.pk }};
+const CSRF = '{{ csrf_token }}';
+let replyTo = null;
+
+// Scroll to bottom on load
+document.addEventListener('DOMContentLoaded', () => {
+  const end = document.getElementById('chat-end');
+  if (end) end.scrollIntoView({ behavior: 'instant' });
+  
+  // Auto-refresh messages every 5 seconds
+  setInterval(refreshMessages, 5000);
+});
+
+async function refreshMessages() {
+  try {
+    const res = await fetch(`/api/problems/${PROBLEM_ID}/messages/`, { credentials: 'same-origin' });
+    if (!res.ok) return;
+    const data = await res.json();
+    const msgs = data.results || data;
+    const container = document.getElementById('chat-messages');
+    const existingCount = container.querySelectorAll('[data-msg-id]').length;
+    if (msgs.length > existingCount) location.reload(); // simple refresh on new messages
+  } catch(e) {}
+}
+
+async function sendMessage(e) {
+  e.preventDefault();
+  const input = document.getElementById('msg-input');
+  const content = input.value.trim();
+  if (!content) return;
+
+  const btn = document.getElementById('send-btn');
+  btn.disabled = true;
+
+  const payload = { content };
+  if (replyTo) payload.reply_to = replyTo.id;
+
+  try {
+    const res = await fetch(`/api/problems/${PROBLEM_ID}/messages/`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF },
+      credentials: 'same-origin',
+      body: JSON.stringify(payload),
+    });
+    if (res.ok) {
+      input.value = '';
+      cancelReply();
+      location.reload();
+    }
+  } catch(e) { console.error(e); }
+  finally { btn.disabled = false; }
+}
+
+function toggleEscrow() {
+  const panel = document.getElementById('escrow-details');
+  const btn = document.getElementById('escrow-toggle-btn');
+  if (!panel) return;
+  const hidden = panel.style.display === 'none';
+  panel.style.display = hidden ? '' : 'none';
+  btn.textContent = `💰 Escrow Panel ${hidden ? '▲' : '▼'}`;
+}
+
+function cancelReply() {
+  replyTo = null;
+  document.getElementById('reply-banner').style.display = 'none';
+}
+
+// Escrow
+async function handleAcceptEscrow(escrowId) {
+  if (!confirm('Accept the escrow terms?')) return;
+  const res = await fetch(`/api/problems/escrow/${escrowId}/accept/`, {
+    method: 'PATCH', headers: { 'X-CSRFToken': CSRF }, credentials: 'same-origin'
+  });
+  if (res.ok) location.reload();
+  else alert('Failed to accept escrow.');
+}
+
+async function handleReleaseEscrow(escrowId) {
+  if (!confirm('Approve deliverables and release escrow? This will dispatch 40% of funds to the developer.')) return;
+  const res = await fetch(`/api/problems/escrow/${escrowId}/release/`, {
+    method: 'PATCH', headers: { 'X-CSRFToken': CSRF }, credentials: 'same-origin'
+  });
+  if (res.ok) location.reload();
+  else alert('Failed to release escrow.');
+}
+
+async function handleDisputeEscrow(escrowId) {
+  const reason = prompt('Enter reason for dispute:');
+  if (!reason) return;
+  const res = await fetch(`/api/problems/escrow/${escrowId}/dispute/`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF },
+    credentials: 'same-origin',
+    body: JSON.stringify({ reason }),
+  });
+  if (res.ok) location.reload();
+  else alert('Failed to file dispute.');
+}
+
+function handlePaystackDeposit(isPoster, escrowId, amount) {
+  if (typeof PaystackPop === 'undefined') {
+    const s = document.createElement('script');
+    s.src = 'https://js.paystack.co/v1/inline.js';
+    s.onload = () => openPaystack(isPoster, escrowId, amount);
+    document.body.appendChild(s);
+  } else {
+    openPaystack(isPoster, escrowId, amount);
+  }
+}
+
+function openPaystack(isPoster, escrowId, amount) {
+  const handler = PaystackPop.setup({
+    key: 'pk_test_afrisolve_mock_public_key_8888',
+    email: '{{ request.user.email }}',
+    amount: Math.round(parseFloat(amount) * 100),
+    currency: 'GHS',
+    ref: `mock_${Date.now()}_{{ request.user.id }}`,
+    callback: async (response) => {
+      const res = await fetch(`/api/problems/escrow/${escrowId}/verify/`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF },
+        credentials: 'same-origin',
+        body: JSON.stringify({ reference: response.reference }),
+      });
+      if (res.ok) { alert('Deposit verified!'); location.reload(); }
+      else alert('Verification failed. Contact admin.');
+    },
+    onClose: () => alert('Payment cancelled.'),
+  });
+  handler.openIframe();
+}
+
+// Propose Modal
+function openProposeModal() {
+  const m = document.getElementById('propose-modal');
+  m.style.display = 'flex';
+}
+function closeProposeModal() {
+  document.getElementById('propose-modal').style.display = 'none';
+}
+function updateDepositPreview(val) {
+  const v = parseFloat(val) || 0;
+  document.getElementById('poster-dep').textContent = (v * 0.2).toLocaleString() + ' GHS';
+  document.getElementById('dev-dep').textContent = (v * 0.2).toLocaleString() + ' GHS';
+  document.getElementById('total-dep').textContent = (v * 0.4).toLocaleString() + ' GHS';
+}
+async function submitProposeEscrow() {
+  const cost = document.getElementById('agreed-cost-input').value;
+  if (!cost || parseFloat(cost) <= 0) { alert('Enter a valid cost.'); return; }
+  const res = await fetch(`/api/problems/${PROBLEM_ID}/escrow/propose/`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF },
+    credentials: 'same-origin',
+    body: JSON.stringify({ agreed_cost: parseFloat(cost) }),
+  });
+  if (res.ok) { closeProposeModal(); location.reload(); }
+  else { const d = await res.json(); alert(d.detail || 'Failed to propose escrow.'); }
+}
+</script>
+{% endblock %}

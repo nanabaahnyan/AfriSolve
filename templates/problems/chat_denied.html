@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Access Denied — AfriSolve{% endblock %}
+{% block content %}
+<div class="page-container" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center;">
+  <div style="font-size:4rem;margin-bottom:1.5rem;opacity:0.5;">🔒</div>
+  <h2 style="font-size:1.75rem;font-weight:800;color:var(--text-primary);margin-bottom:0.75rem;">Access Denied</h2>
+  <p style="color:var(--text-muted);margin-bottom:2rem;max-width:440px;">
+    You are not authorized to view this project's conversation.
+  </p>
+  <a href="{% url 'problems:detail' problem.pk %}" class="btn btn-primary">Back to Project Details</a>
+</div>
+{% endblock %}

@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block title %}Privacy Policy - AfriSolve Hub{% endblock %}
+
+{% block content %}
+<div style="display: flex; gap: 3rem; margin-top: 2rem; flex-wrap: wrap;">
+    <!-- Sidebar / TOC -->
+    <div style="width: 260px; flex-shrink: 0;">
+        <div class="card" style="position: sticky; top: 100px; padding: 1.5rem;">
+            <h3 style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--primary); margin-bottom: 1rem;">Privacy Policy</h3>
+            <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.9rem; font-weight: 600;">
+                <li><a href="#information-collection" style="color: var(--text-muted); text-decoration: none; transition: var(--transition);">1. Info We Collect</a></li>
+                <li><a href="#how-we-use" style="color: var(--text-muted); text-decoration: none; transition: var(--transition);">2. How We Use It</a></li>
+                <li><a href="#information-sharing" style="color: var(--text-muted); text-decoration: none; transition: var(--transition);">3. Info Sharing</a></li>
+                <li><a href="#data-security" style="color: var(--text-muted); text-decoration: none; transition: var(--transition);">4. Data Security</a></li>
+                <li><a href="#cookies" style="color: var(--text-muted); text-decoration: none; transition: var(--transition);">5. Cookies & Tracking</a></li>
+                <li><a href="#your-rights" style="color: var(--text-muted); text-decoration: none; transition: var(--transition);">6. Your Data Rights</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="card" style="flex: 1; min-width: 300px; padding: 3rem;">
+        <div style="border-bottom: 1px solid var(--border); padding-bottom: 1.5rem; margin-bottom: 2rem;">
+            <h1 style="font-size: 2.8rem; margin-bottom: 0.5rem;">Privacy Policy</h1>
+            <p style="color: var(--text-muted); font-weight: 600;">Effective Date: May 12, 2026</p>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 1.5rem; color: var(--text-muted); font-size: 1rem; line-height: 1.7;">
+            <p style="font-size: 1.1rem; color: var(--text); font-weight: 500;">
+                At AfriSolve, we take your privacy seriously. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website or use our marketplace services.
+            </p>
+
+            <h2 id="information-collection" style="color: var(--text); margin-top: 1.5rem; font-size: 1.5rem;">1. Information We Collect</h2>
+            <p>
+                We collect information that you provide directly to us when you register for an account, update your profile, or communicate with us. This includes:
+            </p>
+            <ul style="padding-left: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
+                <li><strong>Personal Data:</strong> Name, email address, phone number, and physical address.</li>
+                <li><strong>Professional Data:</strong> Resumes, portfolios, skills, and work history (for Developers).</li>
+                <li><strong>Financial Data:</strong> Bank account details, mobile money numbers, and transaction history required for processing payments.</li>
+                <li><strong>Identity Verification:</strong> Ghana Card ID details and photographs for security verification.</li>
+            </ul>
+
+            <h2 id="how-we-use" style="color: var(--text); margin-top: 1.5rem; font-size: 1.5rem;">2. How We Use Your Information</h2>
+            <p>
+                We use the information we collect primarily to provide, maintain, and improve our platform. This includes using data to facilitate matching between Posters and Developers, process escrow payments securely, verify user identities to prevent fraud, send technical notices and administrative messages, and provide customer support.
+            </p>
+
+            <h2 id="information-sharing" style="color: var(--text); margin-top: 1.5rem; font-size: 1.5rem;">3. Information Sharing</h2>
+            <p>
+                We do not sell your personal data. We may share your information only in the following circumstances: with other users (e.g., sharing a developer's profile with a poster), with third-party vendors who process payments on our behalf, or when legally required by law enforcement or government requests in Ghana.
+            </p>
+
+            <h2 id="data-security" style="color: var(--text); margin-top: 1.5rem; font-size: 1.5rem;">4. Data Security</h2>
+            <p>
+                We implement industry-standard security measures, including encryption and secure server hosting, to protect your personal information. However, no electronic transmission over the internet or information storage technology can be guaranteed to be 100% secure, so we cannot promise absolute security.
+            </p>
+
+            <h2 id="cookies" style="color: var(--text); margin-top: 1.5rem; font-size: 1.5rem;">5. Cookies & Tracking Technologies</h2>
+            <p>
+                We use cookies and similar tracking technologies to track activity on our platform and hold certain information. You can instruct your browser to refuse all cookies or to indicate when a cookie is being sent, but this may limit your ability to use certain features of AfriSolve.
+            </p>
+
+            <h2 id="your-rights" style="color: var(--text); margin-top: 1.5rem; font-size: 1.5rem;">6. Your Data Rights</h2>
+            <p>
+                Depending on your location, you may have the right to request access to the personal data we hold about you, request that we correct inaccuracies, or request that we delete your data entirely. You can manage most of your data directly through your Profile settings.
+            </p>
+
+            <div style="margin-top: 2rem; padding: 1.5rem; background-color: var(--background); border-left: 4px solid var(--primary); border-radius: var(--radius-sm);">
+                <p style="font-size: 0.9rem; font-weight: bold; color: var(--text); margin: 0;">
+                    To exercise any of your data rights or if you have questions about this policy, please email our Data Protection Officer at 
+                    <a href="mailto:ezekielbaah.nabstechitafric@gmail.com" style="color: var(--primary); text-decoration: none;">ezekielbaah.nabstechitafric@gmail.com</a>.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

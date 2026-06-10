@@ -1,0 +1,223 @@
+{% extends 'base.html' %}
+
+{% block title %}FAQ - AfriSolve Hub{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto; padding: 2rem 0;">
+    <div style="text-align: center; margin-bottom: 3rem;">
+        <h1 style="font-size: 3rem; margin-bottom: 1rem;">Frequently Asked Questions</h1>
+        <p style="color: var(--text-muted); font-size: 1.1rem; max-width: 600px; margin: 0 auto;">
+            Everything you need to know about the product and billing. Can't find the answer you're looking for? Please 
+            <a href="mailto:ezekielbaah.nabstechitafric@gmail.com" style="color: var(--primary); font-weight: bold; text-decoration: none;">chat with our friendly team</a>.
+        </p>
+    </div>
+
+    <!-- Category Tabs -->
+    <div style="display: flex; justify-content: center; gap: 1rem; margin-bottom: 2.5rem;">
+        <button class="btn btn-primary category-tab" data-category="general">General</button>
+        <button class="btn btn-secondary category-tab" data-category="posters">For Posters</button>
+        <button class="btn btn-secondary category-tab" data-category="developers">For Developers</button>
+    </div>
+
+    <!-- Accordion Section -->
+    <div class="card" style="padding: 0; overflow: hidden;">
+        <!-- General FAQs -->
+        <div class="faq-group" id="category-general">
+            <div class="faq-item">
+                <button class="faq-question">
+                    <span>What is AfriSolve?</span>
+                    <span class="faq-arrow">▼</span>
+                </button>
+                <div class="faq-answer">
+                    <p>AfriSolve is a premier digital marketplace connecting Ghanaian businesses and individuals with top-tier technical talent to solve real-world problems through custom software development.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question">
+                    <span>How does the platform work?</span>
+                    <span class="faq-arrow">▼</span>
+                </button>
+                <div class="faq-answer">
+                    <p>Posters list a problem or project they need solved. Developers review open problems and submit proposals (applications). The Poster reviews applications, selects a Developer, and the project moves to the active phase where progress is tracked and communication happens directly on the platform.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question">
+                    <span>Is it free to join?</span>
+                    <span class="faq-arrow">▼</span>
+                </button>
+                <div class="faq-answer">
+                    <p>Yes, joining AfriSolve is completely free for both Posters and Developers. We only take a small percentage fee upon successful completion and payment of a project.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- For Posters FAQs -->
+        <div class="faq-group" id="category-posters" style="display: none;">
+            <div class="faq-item">
+                <button class="faq-question">
+                    <span>How do I choose the right developer?</span>
+                    <span class="faq-arrow">▼</span>
+                </button>
+                <div class="faq-answer">
+                    <p>When a developer applies to your project, you can review their proposed approach, estimated timeline, and past project portfolio on their profile. We recommend chatting with them using our built-in messaging system before making a final decision.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question">
+                    <span>How are payments handled?</span>
+                    <span class="faq-arrow">▼</span>
+                </button>
+                <div class="faq-answer">
+                    <p>Payments are securely held in escrow once a developer is assigned to your project. The funds are only released to the developer once you approve the final deliverables, ensuring your money is protected.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question">
+                    <span>What if I am not satisfied with the work?</span>
+                    <span class="faq-arrow">▼</span>
+                </button>
+                <div class="faq-answer">
+                    <p>If the delivered work does not meet the agreed-upon requirements, you can request revisions. If a dispute arises, our support team will step in to mediate and determine if a refund is appropriate based on the project scope.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- For Developers FAQs -->
+        <div class="faq-group" id="category-developers" style="display: none;">
+            <div class="faq-item">
+                <button class="faq-question">
+                    <span>How do I apply for a project?</span>
+                    <span class="faq-arrow">▼</span>
+                </button>
+                <div class="faq-answer">
+                    <p>Navigate to the "Problems" board, find a project that matches your skills, and click "Apply". You will need to submit an estimated duration and a brief proposal explaining how you intend to solve the problem.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question">
+                    <span>How and when do I get paid?</span>
+                    <span class="faq-arrow">▼</span>
+                </button>
+                <div class="faq-answer">
+                    <p>Once you complete the project and the Poster approves the final deliverables, the funds held in escrow are automatically released to your connected bank account or mobile money wallet within 2-3 business days.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question">
+                    <span>Can I work on multiple projects at once?</span>
+                    <span class="faq-arrow">▼</span>
+                </button>
+                <div class="faq-answer">
+                    <p>Yes, experienced developers are welcome to manage multiple projects simultaneously, provided they can consistently meet the deadlines and quality expectations for all of them.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CTA Support Card -->
+    <div class="card animate-fade" style="background: linear-gradient(135deg, var(--accent), var(--primary)); color: white; border: none; text-align: center; padding: 3rem; margin-top: 3rem;">
+        <h2 style="font-size: 2rem; margin-bottom: 0.75rem;">Still have questions?</h2>
+        <p style="opacity: 0.9; margin-bottom: 2rem; max-width: 500px; margin-left: auto; margin-right: auto;">
+            Our support team is available 24/7 to help you with any issues or questions you might have about the AfriSolve platform.
+        </p>
+        <a href="mailto:ezekielbaah.nabstechitafric@gmail.com" class="btn btn-secondary" style="color: var(--primary); font-weight: 800;">Contact Support</a>
+    </div>
+</div>
+
+<style>
+    .faq-item {
+        border-bottom: 1px solid var(--border);
+    }
+    .faq-item:last-child {
+        border-bottom: none;
+    }
+    .faq-question {
+        width: 100%;
+        background: none;
+        border: none;
+        padding: 1.5rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        text-align: left;
+        font-family: var(--font-heading);
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--text);
+        cursor: pointer;
+        outline: none;
+        transition: var(--transition);
+    }
+    .faq-question:hover {
+        background-color: var(--background);
+    }
+    .faq-arrow {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        transition: transform 0.3s;
+    }
+    .faq-answer {
+        max-height: 0;
+        overflow: hidden;
+        transition: all 0.3s ease-out;
+        background-color: var(--background);
+        opacity: 0;
+    }
+    .faq-answer p {
+        padding: 0 2rem 1.5rem 2rem;
+        color: var(--text-muted);
+        font-size: 0.95rem;
+    }
+    .faq-item.open .faq-answer {
+        max-height: 200px;
+        opacity: 1;
+    }
+    .faq-item.open .faq-arrow {
+        transform: rotate(180deg);
+        color: var(--primary);
+    }
+    .faq-item.open .faq-question {
+        color: var(--primary);
+        background-color: var(--primary-light);
+    }
+</style>
+
+<script>
+    // Tab switching logic
+    document.querySelectorAll('.category-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('.category-tab').forEach(t => {
+                t.classList.remove('btn-primary');
+                t.classList.add('btn-secondary');
+            });
+            tab.classList.add('btn-primary');
+            tab.classList.remove('btn-secondary');
+
+            const targetCategory = tab.dataset.category;
+            document.querySelectorAll('.faq-group').forEach(group => {
+                if (group.id === `category-${targetCategory}`) {
+                    group.style.display = 'block';
+                } else {
+                    group.style.display = 'none';
+                }
+            });
+        });
+    });
+
+    // Accordion toggles
+    document.querySelectorAll('.faq-question').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const item = btn.parentElement;
+            const isOpen = item.classList.contains('open');
+            
+            // Close other items
+            document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+            
+            if (!isOpen) {
+                item.classList.add('open');
+            }
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+{% block title %}{{ profile_user.username }} — AfriSolve{% endblock %}
+{% block content %}
+<div class="page-container" style="padding-top:2.5rem;padding-bottom:3rem;">
+  <div style="max-width:800px;margin:0 auto;">
+
+    <!-- Back + Edit Row -->
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem;">
+      <a href="{% url 'dashboard' %}" style="display:inline-flex;align-items:center;gap:0.4rem;color:var(--accent);font-weight:600;text-decoration:none;font-size:0.9rem;">
+        <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+        </svg>
+        Back to Dashboard
+      </a>
+    </div>
+
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}" style="margin-bottom:1rem;">{{ message }}</div>
+    {% endfor %}
+
+    <!-- Profile Header -->
+    <div class="card" style="padding:0;overflow:hidden;margin-bottom:1.5rem;">
+      <div style="background:linear-gradient(135deg,#0f172a,#3730a3);padding:2rem 2.5rem;display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;">
+        <div style="width:80px;height:80px;border-radius:50%;background:#6366f1;display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:700;color:#fff;flex-shrink:0;">
+          {{ profile_user.username|slice:":1"|upper }}
+        </div>
+        <div style="flex:1;">
+          <h1 style="color:#fff;font-size:1.75rem;font-weight:800;margin-bottom:0.2rem;">{{ profile_user.username }}</h1>
+          <p style="color:#a5b4fc;">{{ profile_user.email }}</p>
+        </div>
+        <span style="background:#f59e0b;color:#fff;padding:0.3rem 0.9rem;border-radius:20px;font-size:0.8rem;font-weight:700;text-transform:uppercase;">
+          {{ profile_user.role }}
+        </span>
+      </div>
+
+      <div style="padding:2rem 2.5rem;">
+
+        <!-- View Mode -->
+        <div id="view-mode">
+          <div class="grid-2" style="gap:1.5rem;margin-bottom:2rem;">
+            <div style="background:var(--bg-secondary);padding:1.25rem;border-radius:12px;border:1px solid var(--border);">
+              <div style="font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted);margin-bottom:0.5rem;">Member Details</div>
+              <p style="color:var(--text-primary);font-size:0.9rem;margin-bottom:0.4rem;">Joined: {{ profile_user.date_joined|date:"N j, Y" }}</p>
+              <p style="color:var(--text-primary);font-size:0.9rem;margin-bottom:0.4rem;">Card No: {{ profile_user.ghana_card_number|default:"N/A" }}</p>
+              <p style="color:var(--text-primary);font-size:0.9rem;">Active Projects: {{ active_count }}</p>
+            </div>
+            <div style="background:var(--bg-secondary);padding:1.25rem;border-radius:12px;border:1px solid var(--border);">
+              <div style="font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted);margin-bottom:0.5rem;">Activity</div>
+              <p style="color:var(--text-primary);font-size:0.9rem;margin-bottom:0.4rem;">Completed Projects: <strong style="color:var(--accent);">{{ completed_count }}</strong></p>
+            </div>
+          </div>
+
+          <!-- Ghana Card Images -->
+          <div style="border-top:1px solid var(--border);padding-top:1.5rem;">
+            <div style="font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted);margin-bottom:1rem;">Identity Verification (Ghana Card)</div>
+            <div class="grid-2" style="gap:1.5rem;">
+              <div>
+                <p style="font-size:0.75rem;font-weight:700;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.5rem;">Front View</p>
+                <div style="border-radius:12px;overflow:hidden;border:1px solid var(--border);background:var(--bg-secondary);height:180px;display:flex;align-items:center;justify-content:center;">
+                  {% if profile_user.ghana_card_front %}
+                  <img src="{{ profile_user.ghana_card_front.url }}" alt="Front" style="width:100%;height:100%;object-fit:contain;">
+                  {% else %}
+                  <span style="color:var(--text-muted);font-style:italic;font-size:0.875rem;">No image uploaded</span>
+                  {% endif %}
+                </div>
+              </div>
+              <div>
+                <p style="font-size:0.75rem;font-weight:700;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.5rem;">Back View</p>
+                <div style="border-radius:12px;overflow:hidden;border:1px solid var(--border);background:var(--bg-secondary);height:180px;display:flex;align-items:center;justify-content:center;">
+                  {% if profile_user.ghana_card_back %}
+                  <img src="{{ profile_user.ghana_card_back.url }}" alt="Back" style="width:100%;height:100%;object-fit:contain;">
+                  {% else %}
+                  <span style="color:var(--text-muted);font-style:italic;font-size:0.875rem;">No image uploaded</span>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {% if request.user.is_staff or request.user.role == 'admin' %}
+          <div style="margin-top:1.5rem;display:flex;justify-content:flex-end;">
+            <button onclick="toggleEdit()" class="btn btn-primary">Edit User</button>
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- Edit Mode (admin only) -->
+        {% if request.user.is_staff or request.user.role == 'admin' %}
+        <div id="edit-mode" style="display:none;">
+          <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="grid-2" style="gap:1.25rem;">
+              <div class="form-group">
+                <label class="form-label">Username</label>
+                <input type="text" name="username" value="{{ profile_user.username }}" class="form-control" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Email</label>
+                <input type="email" name="email" value="{{ profile_user.email }}" class="form-control" required>
+              </div>
+            </div>
+            <div class="grid-2" style="gap:1.25rem;">
+              <div class="form-group">
+                <label class="form-label">Role</label>
+                <select name="role" class="form-control">
+                  <option value="poster" {% if profile_user.role == 'poster' %}selected{% endif %}>Poster</option>
+                  <option value="developer" {% if profile_user.role == 'developer' %}selected{% endif %}>Developer</option>
+                  <option value="admin" {% if profile_user.role == 'admin' %}selected{% endif %}>Admin</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Ghana Card Number</label>
+                <input type="text" name="ghana_card_number" value="{{ profile_user.ghana_card_number|default:'' }}" class="form-control">
+              </div>
+            </div>
+            <div class="grid-2" style="gap:1.25rem;">
+              <div class="form-group">
+                <label class="form-label">Replace Front Image</label>
+                <input type="file" name="ghana_card_front" accept="image/*" class="form-control">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Replace Back Image</label>
+                <input type="file" name="ghana_card_back" accept="image/*" class="form-control">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">New Password <span style="color:var(--text-muted);font-weight:400;">(leave blank to keep current)</span></label>
+              <input type="password" name="password" class="form-control" placeholder="••••••••">
+            </div>
+            <div style="display:flex;justify-content:flex-end;gap:0.75rem;padding-top:1rem;border-top:1px solid var(--border);margin-top:0.5rem;">
+              <button type="button" onclick="toggleEdit()" class="btn btn-secondary">Cancel</button>
+              <button type="submit" class="btn btn-primary">Save Changes</button>
+            </div>
+          </form>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function toggleEdit() {
+  const view = document.getElementById('view-mode');
+  const edit = document.getElementById('edit-mode');
+  if (view.style.display === 'none') {
+    view.style.display = ''; edit.style.display = 'none';
+  } else {
+    view.style.display = 'none'; edit.style.display = '';
+  }
+}
+</script>
+{% endblock %}

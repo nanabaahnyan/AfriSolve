@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block title %}AfriSolve Hub - Solve Everyday Problems{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <!-- Left Column: Copy & Core Message -->
+    <div style="display: flex; flex-direction: column; justify-content: center;">
+        <h1 class="hero-title">AfriSolve Hub</h1>
+        <p class="hero-subtitle">
+            Connect with skilled developers to solve everyday problems. Let's build a better future, together.
+        </p>
+        <div>
+            {% if request.user.is_authenticated %}
+                <a href="{% url 'dashboard' %}" class="btn btn-primary" style="font-size: 1.1rem; padding: 1rem 2rem;">Go to Dashboard</a>
+            {% else %}
+                <a href="{% url 'register' %}" class="btn btn-primary" style="font-size: 1.1rem; padding: 1rem 2rem;">Get Started Now</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Right Column: Interactive Role Selector Cards -->
+    <div style="display: flex; align-items: center; justify-content: center;">
+        <div class="card" style="width: 100%; max-width: 400px; padding: 2.5rem; text-align: center;">
+            <h2 style="font-size: 1.8rem; margin-bottom: 1.5rem;">Join the Marketplace</h2>
+            
+            {% if request.user.is_authenticated %}
+                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                    <p style="color: var(--text-muted); margin-bottom: 1rem;">You are currently logged in as <strong>{{ request.user.username }}</strong>.</p>
+                    <a href="{% url 'dashboard' %}" class="btn btn-primary">Go to Dashboard</a>
+                    <a href="{% url 'problems:list' %}" class="btn btn-secondary">Browse Open Problems</a>
+                </div>
+            {% else %}
+                <div style="display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1.5rem;">
+                    <a href="{% url 'register' %}?role=poster" class="btn btn-secondary" style="font-weight: 700; width: 100%;">
+                        I am a Poster
+                    </a>
+                    <a href="{% url 'register' %}?role=developer" class="btn btn-primary" style="font-weight: 700; width: 100%;">
+                        I am a Developer
+                    </a>
+                </div>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">
+                    Already have an account? 
+                    <a href="{% url 'login' %}" style="color: var(--primary); font-weight: bold; text-decoration: none;">Sign in</a>
+                </p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div style="margin-top: 4rem; padding: 4rem 0; border-top: 1px solid var(--border);">
+    <h2 style="text-align: center; font-size: 2.2rem; margin-bottom: 3rem;">How AfriSolve Helps You</h2>
+    <div class="grid grid-cols-3">
+        <div class="card" style="margin-bottom: 0; text-align: center;">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">📋</div>
+            <h3 style="margin-bottom: 0.75rem;">1. Post Your Problem</h3>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">Describe the issue or project details, specify your budget, and publish it on the marketplace.</p>
+        </div>
+        <div class="card" style="margin-bottom: 0; text-align: center;">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">🤝</div>
+            <h3 style="margin-bottom: 0.75rem;">2. Match with Experts</h3>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">Review proposals submitted by verified developers, discuss requirements in chat, and assign the project.</p>
+        </div>
+        <div class="card" style="margin-bottom: 0; text-align: center;">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">🔒</div>
+            <h3 style="margin-bottom: 0.75rem;">3. Safe Escrow Payments</h3>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">Funds are held securely in a multi-party escrow vault and only released once deliverables are successfully completed.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

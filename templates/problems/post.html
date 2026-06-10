@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Post a Problem — AfriSolve{% endblock %}
+{% block content %}
+<div class="page-container" style="padding-top:2.5rem;padding-bottom:3rem;">
+  <div style="max-width:720px;margin:0 auto;">
+
+    {% if request.user.role != 'poster' and not request.user.is_staff %}
+    <div class="card" style="text-align:center;padding:3rem 2rem;">
+      <div style="font-size:3rem;margin-bottom:1rem;">🔒</div>
+      <h2 style="font-size:1.4rem;font-weight:800;color:var(--text-primary);margin-bottom:0.75rem;">Posters Only</h2>
+      <p style="color:var(--text-muted);margin-bottom:1.5rem;">You must be registered as a Problem Poster to submit a problem.</p>
+      <a href="{% url 'dashboard' %}" class="btn btn-primary">Go to Dashboard</a>
+    </div>
+    {% else %}
+
+    <div class="card" style="padding:0;overflow:hidden;">
+      <!-- Header Gradient -->
+      <div style="background:linear-gradient(135deg,#0f172a,#3730a3);padding:2rem 2.5rem;color:#fff;">
+        <h1 style="font-size:1.75rem;font-weight:800;margin-bottom:0.4rem;">Post a New Problem</h1>
+        <p style="color:#a5b4fc;font-size:0.9rem;">Describe the challenge you're facing and connect with developers to build a solution.</p>
+      </div>
+
+      <form method="post" style="padding:2.5rem;">
+        {% csrf_token %}
+
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}" style="margin-bottom:1.5rem;">{{ message }}</div>
+        {% endfor %}
+
+        <div class="form-group">
+          <label for="title" class="form-label">Problem Title <span style="color:var(--accent);">*</span></label>
+          <input type="text" id="title" name="title" required class="form-control"
+            placeholder="E.g., Clean Water Monitoring System">
+        </div>
+
+        <div class="grid-2" style="gap:1.25rem;">
+          <div class="form-group">
+            <label for="category" class="form-label">Category <span style="color:var(--accent);">*</span></label>
+            <select id="category" name="category" required class="form-control">
+              <option value="">Select a category</option>
+              {% for cat in categories %}
+              <option value="{{ cat }}">{{ cat }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="location" class="form-label">Location / Area <span style="color:var(--text-muted);font-weight:400;">(optional)</span></label>
+            <input type="text" id="location" name="location" class="form-control"
+              placeholder="E.g., Accra, Kumasi">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="description" class="form-label">Detailed Description <span style="color:var(--accent);">*</span></label>
+          <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:0.5rem;">Explain the problem clearly, who faces it, and why it's important.</p>
+          <textarea id="description" name="description" rows="6" required class="form-control"
+            placeholder="Describe the challenge in detail..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="business_impact" class="form-label">Potential Business Impact <span style="color:var(--text-muted);font-weight:400;">(optional)</span></label>
+          <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:0.5rem;">How could solving this generate revenue? This helps developers understand the 60/40 profit potential.</p>
+          <textarea id="business_impact" name="business_impact" rows="3" class="form-control"
+            placeholder="E.g., Subscription model serving 10,000+ farmers..."></textarea>
+        </div>
+
+        <div style="display:flex;justify-content:flex-end;gap:0.75rem;padding-top:1rem;border-top:1px solid var(--border);margin-top:0.5rem;">
+          <a href="{% url 'dashboard' %}" class="btn btn-secondary">Cancel</a>
+          <button type="submit" class="btn btn-primary">Post Problem</button>
+        </div>
+      </form>
+    </div>
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}

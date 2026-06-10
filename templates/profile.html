@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block title %}My Profile - AfriSolve Hub{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto;">
+    <div style="margin-bottom: 2rem;">
+        <h1 style="font-size: 2.5rem;">Edit Profile</h1>
+        <p style="color: var(--text-muted);">Manage your public profile information and social accounts</p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 280px 1fr; gap: 2rem; align-items: start; flex-wrap: wrap;">
+        <!-- Left Column: Avatar Display -->
+        <div class="card" style="text-align: center; padding: 2rem 1.5rem;">
+            <div style="margin-bottom: 1.5rem;">
+                {% if request.user.profile_image %}
+                    <img src="{{ request.user.profile_image.url }}" alt="Profile Avatar" style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover; border: 4px solid var(--border); box-shadow: var(--shadow-sm);">
+                {% else %}
+                    <div style="width: 150px; height: 150px; border-radius: 50%; background-color: var(--primary-light); color: var(--primary); font-size: 4rem; display: flex; align-items: center; justify-content: center; margin: 0 auto; border: 4px solid var(--border);">
+                        👤
+                    </div>
+                {% endif %}
+            </div>
+            
+            <h3 style="font-size: 1.4rem; margin-bottom: 0.25rem;">{{ request.user.username }}</h3>
+            <span class="badge badge-completed" style="background-color: var(--primary-light); color: var(--primary); font-weight: bold; margin-bottom: 1.5rem;">
+                {{ request.user.get_role_display }}
+            </span>
+            
+            <p style="color: var(--text-muted); font-size: 0.85rem; border-top: 1px solid var(--border); padding-top: 1rem;">
+                Joined: {{ request.user.date_joined|date:"M d, Y" }}
+            </p>
+        </div>
+
+        <!-- Right Column: Profile Edit Form -->
+        <div class="card" style="padding: 2.5rem;">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <h3 style="font-size: 1.25rem; border-bottom: 2px solid var(--border); padding-bottom: 0.5rem; margin-bottom: 1.5rem; color: var(--primary);">Basic Info</h3>
+
+                <div class="grid grid-cols-2">
+                    <div class="form-group">
+                        <label for="id_first_name" class="form-label">First Name</label>
+                        {{ form.first_name }}
+                    </div>
+                    <div class="form-group">
+                        <label for="id_last_name" class="form-label">Last Name</label>
+                        {{ form.last_name }}
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="id_profile_image" class="form-label">Update Profile Avatar</label>
+                    {{ form.profile_image }}
+                </div>
+
+                <h3 style="font-size: 1.25rem; border-bottom: 2px solid var(--border); padding-bottom: 0.5rem; margin-bottom: 1.5rem; color: var(--primary); margin-top: 2rem;">Social Profiles</h3>
+
+                <div class="form-group">
+                    <label for="id_github_url" class="form-label">GitHub Profile Link</label>
+                    {{ form.github_url }}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_linkedin_url" class="form-label">LinkedIn Profile Link</label>
+                    {{ form.linkedin_url }}
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="font-weight: bold; padding: 0.8rem 2rem; margin-top: 1rem;">Save Changes</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

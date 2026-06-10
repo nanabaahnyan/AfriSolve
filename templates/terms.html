@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block title %}Terms of Service - AfriSolve Hub{% endblock %}
+
+{% block content %}
+<div style="display: flex; gap: 3rem; margin-top: 2rem; flex-wrap: wrap;">
+    <!-- Sidebar / TOC -->
+    <div style="width: 260px; flex-shrink: 0;">
+        <div class="card" style="position: sticky; top: 100px; padding: 1.5rem;">
+            <h3 style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--primary); margin-bottom: 1rem;">Table of Contents</h3>
+            <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.9rem; font-weight: 600;">
+                <li><a href="#acceptance" style="color: var(--text-muted); text-decoration: none; transition: var(--transition);">1. Acceptance of Terms</a></li>
+                <li><a href="#accounts" style="color: var(--text-muted); text-decoration: none; transition: var(--transition);">2. User Accounts</a></li>
+                <li><a href="#platform-rules" style="color: var(--text-muted); text-decoration: none; transition: var(--transition);">3. Rules of Conduct</a></li>
+                <li><a href="#payments" style="color: var(--text-muted); text-decoration: none; transition: var(--transition);">4. Payments & Escrow</a></li>
+                <li><a href="#intellectual-property" style="color: var(--text-muted); text-decoration: none; transition: var(--transition);">5. Intellectual Property</a></li>
+                <li><a href="#disputes" style="color: var(--text-muted); text-decoration: none; transition: var(--transition);">6. Dispute Resolution</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="card" style="flex: 1; min-width: 300px; padding: 3rem;">
+        <div style="border-bottom: 1px solid var(--border); padding-bottom: 1.5rem; margin-bottom: 2rem;">
+            <h1 style="font-size: 2.8rem; margin-bottom: 0.5rem;">Terms of Service</h1>
+            <p style="color: var(--text-muted); font-weight: 600;">Last Updated: May 12, 2026</p>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 1.5rem; color: var(--text-muted); font-size: 1rem; line-height: 1.7;">
+            <p style="font-size: 1.1rem; color: var(--text); font-weight: 500;">
+                Welcome to AfriSolve. These Terms of Service ("Terms") govern your access to and use of the AfriSolve website, platform, and services. Please read them carefully before using our platform.
+            </p>
+
+            <h2 id="acceptance" style="color: var(--text); margin-top: 1.5rem; font-size: 1.5rem;">1. Acceptance of Terms</h2>
+            <p>
+                By accessing or using the AfriSolve platform, you agree to be bound by these Terms and our Privacy Policy. If you do not agree to these Terms, you may not access or use our services. We reserve the right to update these Terms at any time, and we will notify users of significant changes.
+            </p>
+
+            <h2 id="accounts" style="color: var(--text); margin-top: 1.5rem; font-size: 1.5rem;">2. User Accounts</h2>
+            <p>
+                To use certain features of the platform, you must register for an account. You agree to:
+            </p>
+            <ul style="padding-left: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
+                <li>Provide accurate, current, and complete information during registration.</li>
+                <li>Maintain the security of your password and accept all risks of unauthorized access to your account.</li>
+                <li>Promptly notify us if you discover or suspect any security breaches related to the platform.</li>
+                <li>Ensure you are legally permitted to enter into binding contracts in your jurisdiction.</li>
+            </ul>
+
+            <h2 id="platform-rules" style="color: var(--text); margin-top: 1.5rem; font-size: 1.5rem;">3. Platform Rules & Conduct</h2>
+            <p>
+                AfriSolve is a marketplace connecting those with problems ("Posters") to those who can solve them ("Developers"). You agree not to engage in any of the following prohibited activities:
+                bypassing our platform to establish direct payment relationships, posting false or misleading projects, harassing other users, or distributing malware or malicious code through our systems.
+            </p>
+
+            <h2 id="payments" style="color: var(--text); margin-top: 1.5rem; font-size: 1.5rem;">4. Payments & Fees</h2>
+            <p>
+                When a project is agreed upon, Poster funds are placed into an AfriSolve Escrow account. Funds are released to the Developer only upon successful completion and approval of the project milestones. AfriSolve charges a service fee for facilitating this transaction, which will be clearly communicated before any contract is finalized.
+            </p>
+
+            <h2 id="intellectual-property" style="color: var(--text); margin-top: 1.5rem; font-size: 1.5rem;">5. Intellectual Property</h2>
+            <p>
+                Unless otherwise explicitly agreed upon in writing between the Poster and Developer, all intellectual property rights for the developed work transfer to the Poster upon full payment. AfriSolve retains all rights to the platform's code, design, and branding.
+            </p>
+
+            <h2 id="disputes" style="color: var(--text); margin-top: 1.5rem; font-size: 1.5rem;">6. Dispute Resolution</h2>
+            <p>
+                In the event of a dispute between a Poster and a Developer regarding deliverables or payments, AfriSolve will act as a mediator. Both parties agree to participate in our dispute resolution process in good faith before pursuing external legal action. AfriSolve's decision on escrow fund distribution is final.
+            </p>
+
+            <div style="margin-top: 2rem; padding: 1.5rem; background-color: var(--background); border-left: 4px solid var(--primary); border-radius: var(--radius-sm);">
+                <p style="font-size: 0.9rem; font-weight: bold; color: var(--text); margin: 0;">
+                    If you have any questions regarding these terms, please contact our legal team at 
+                    <a href="mailto:ezekielbaah.nabstechitafric@gmail.com" style="color: var(--primary); text-decoration: none;">ezekielbaah.nabstechitafric@gmail.com</a>.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

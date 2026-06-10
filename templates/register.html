@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block title %}Register - AfriSolve Hub{% endblock %}
+
+{% block content %}
+<div style="max-width: 650px; margin: 2rem auto;">
+    <div class="card animate-fade" style="padding: 2.5rem;">
+        <div style="text-align: center; margin-bottom: 2rem;">
+            <h1 style="font-size: 2rem; margin-bottom: 0.5rem;">Create Account</h1>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">Join the AfriSolve marketplace and start solving problems</p>
+        </div>
+
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="grid grid-cols-2">
+                <div class="form-group">
+                    <label for="id_first_name" class="form-label">First Name</label>
+                    {{ form.first_name }}
+                </div>
+                <div class="form-group">
+                    <label for="id_last_name" class="form-label">Last Name</label>
+                    {{ form.last_name }}
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2">
+                <div class="form-group">
+                    <label for="id_username" class="form-label">Username (Optional)</label>
+                    {{ form.username }}
+                    <small style="color: var(--text-muted); font-size: 0.75rem;">If blank, one will be auto-generated.</small>
+                </div>
+                <div class="form-group">
+                    <label for="id_email" class="form-label">Email Address</label>
+                    {{ form.email }}
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2">
+                <div class="form-group">
+                    <label for="id_password" class="form-label">Password</label>
+                    {{ form.password }}
+                </div>
+                <div class="form-group">
+                    <label for="id_confirm_password" class="form-label">Confirm Password</label>
+                    {{ form.confirm_password }}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="id_role" class="form-label">I want to join as a:</label>
+                {{ form.role }}
+            </div>
+
+            <!-- Identity Verification Section -->
+            <div style="margin-top: 2rem; border-top: 2px solid var(--border); padding-top: 1.5rem;">
+                <h3 style="font-size: 1.25rem; margin-bottom: 1rem; color: var(--primary);">Identity Verification (Ghana Card)</h3>
+                <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1.5rem; line-height: 1.5;">
+                    To maintain security on our platform, we require biometrics matching and Ghana Card details. Your card details are matched via OCR and facial recognition.
+                </p>
+
+                <div class="form-group">
+                    <label for="id_ghana_card_number" class="form-label">Ghana Card Number (national ID)</label>
+                    {{ form.ghana_card_number }}
+                </div>
+
+                <div class="grid grid-cols-2">
+                    <div class="form-group">
+                        <label for="id_ghana_card_front" class="form-label">Card Front Picture</label>
+                        {{ form.ghana_card_front }}
+                    </div>
+                    <div class="form-group">
+                        <label for="id_ghana_card_back" class="form-label">Card Back Picture</label>
+                        {{ form.ghana_card_back }}
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="id_profile_image" class="form-label">Selfie Picture (for face match)</label>
+                    {{ form.profile_image }}
+                    <small style="color: var(--text-muted); font-size: 0.75rem;">Make sure your face is well-lit and clearly visible.</small>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; font-weight: bold; padding: 0.9rem; margin-top: 1.5rem;">Register & Verify</button>
+        </form>
+
+        <div style="text-align: center; margin-top: 1.5rem; font-size: 0.95rem; border-top: 1px solid var(--border); padding-top: 1.25rem;">
+            <p style="color: var(--text-muted);">
+                Already have an account? 
+                <a href="{% url 'login' %}" style="color: var(--primary); font-weight: bold; text-decoration: none;">Sign in</a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
