@@ -2,9 +2,9 @@
 
 ### Connecting Problem Posters with Skilled Developers across Ghana
 
-#### Version: 1.0
-#### Date: June 10, 2026
-#### Status: Draft
+<b>Version:</b> 1.0
+<b>Date:</b> June 10, 2026
+<b>Status:</b> Draft
 
 ## Table of Contents
 1. Introduction
