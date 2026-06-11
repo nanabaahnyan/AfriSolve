@@ -95,9 +95,9 @@ Requirements are characterized as follows:
 
 #### Out of Scope
 * Mobile native app (Flutter/React Native).
-* Automated Ghana Card verification via NIA API (manual admin review in MVP).
+* Automated Ghana Card verification via NIA API.
 * Public API for external problem sources.
-* Advanced dispute resolution automation (admin-led in MVP).
+* Advanced dispute resolution automation.
 
 ### 1.5 References
 * AfriSolve Hub Project Plan
@@ -282,7 +282,7 @@ AfriSolve Hub is a standalone web application built on Python Django (backend + 
 * Admin training manual (escrow management, dispute resolution).
 * Video tutorials for posters/developers (Ghana Card upload, down payment flow).
 
-### 6.2 Future API (Out of Scope for MVP)
+### 6.2 Future API 
 * Public REST API for external problem sources (e.g., NGOs submitting problems).
 
 
