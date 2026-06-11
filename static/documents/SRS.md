@@ -71,7 +71,6 @@ Requirements are characterized as follows:
 |----------------|----------------------------------|
 | FR-XX          | Functional requirement           |
 | NFR-XX         | Non-Functional requirement       |
-| UC-XX          | Use case                         |
 
 ### 1.3 Intended Audience
 | Stakeholder    | Role                                                                      |
@@ -324,3 +323,6 @@ This section display use case diagrams for problem poster, developer/team, and a
 ### Admin
 ![Admin](<../images/Admin Poster.svg>)
 
+## 5. Per-Problem Chat Architecture
+This sequence diagram shows how messages and files flow through the chat feature in this project.
+![Per-Problem Chat Architecture](<../images/Per-Problem Chat Architecture.svg>)
