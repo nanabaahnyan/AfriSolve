@@ -281,3 +281,220 @@ AfriSolve Hub is a standalone web application built on Python Django (backend + 
 | Term            | Definition                     |
 |----------------|----------------------------------|
 | Ghana Card         | National ID card of Ghana, used for KYC. |
+| Escrow         | Third-party holding of funds (platform-managed) until conditions met. |
+| Down Payment (20%)         | 20% of total project cost paid by each party before work starts. |
+| Forfeiture         | Loss of down payment due to quitting/abandonment. |
+| Django Channels         | Django extension for WebSockets (real-time chat). |
+
+# Analysis Models
+## 1. Context Diagram 
+```Mermaid
+graph TD
+    Poster[Problem Poster] -->|Posts problem, pays 20%, chats, signs off| AfriSolve
+    Developer[Developer / Team] -->|Applies, pays 20%, updates progress, chats| AfriSolve
+    Admin[Admin] -->|Verifies Ghana Card, approves dev, manages escrow, views chats| AfriSolve
+    AfriSolve -->|Initiates payment, receives webhooks| Paystack[Paystack Gateway]
+    AfriSolve -->|Sends email notifications| EmailServer[Email Service]
+    AfriSolve -->|Stores files, images| CloudStorage[Cloudinary]
+
+    style AfriSolve fill:#f9f,stroke:#333,stroke-width:4px
+
+```
+
+## 2. Process Flow Diagram 
+### * Down Payment & Escrow
+```Mermaid
+flowchart TD
+    A[Admin approves developer/team] --> B[Both parties agree on total project cost]
+    B --> C[System generates 20% payment links for poster & developer]
+    C --> D{Both pay via Paystack?}
+    D -->|No, one party fails to pay| E[Project not started. No escrow held]
+    D -->|Yes| F[Paystack webhook confirms both payments]
+    F --> G[Funds held in platform escrow account]
+    G --> H[Project status = 'In Progress']
+    H --> I{What happens next?}
+    I -->|Developer abandons| J[Admin transfers developer's 20% to poster]
+    I -->|Poster cancels| K[Admin transfers poster's 20% to developer]
+    I -->|Both complete successfully| L[Admin releases both 20% back to respective parties]
+    I -->|Dispute| M[Admin reviews chat & progress, decides outcome]
+```
+
+### * Problem Lifecycle
+```Mermaid
+flowchart LR
+    A[Poster submits problem] --> B[Problem appears on Open Board]
+    B --> C[Developer/team applies]
+    C --> D{Admin approves?}
+    D -->|No| E[Problem remains open]
+    D -->|Yes| F[Problem locked to developer/team]
+    F --> G[Cost assessment & down payments]
+    G --> H[Developer updates progress 0% → 30% → 50% → 80% → 100%]
+    H --> I[Poster confirms delivery]
+    I --> J[Admin releases escrow / applies to final payment]
+    J --> K[Project completed]
+```
+
+## 3. Entity Relationship Diagram (ERD)
+```Mermaid
+erDiagram
+    User {
+        int id PK
+        string email UK
+        string password_hash
+        string role
+        string ghana_card_number UK
+        string ghana_card_image_path
+        boolean is_verified
+        datetime created_at
+    }
+
+    Problem {
+        int id PK
+        int poster_id FK
+        string title
+        text description
+        string category
+        string location
+        string status
+        datetime posted_at
+    }
+
+    Team {
+        int id PK
+        string name
+        int leader_id FK
+    }
+
+    TeamMember {
+        int team_id FK
+        int user_id FK
+    }
+
+    Application {
+        int id PK
+        int problem_id FK
+        int applicant_id FK
+        string status
+        datetime applied_at
+    }
+
+    ProjectAgreement {
+        int id PK
+        int problem_id FK
+        int total_cost_gHS
+        int poster_20_percent
+        int developer_20_percent
+        datetime signed_at
+    }
+
+    EscrowTransaction {
+        int id PK
+        int agreement_id FK
+        string party
+        int amount
+        string paystack_reference
+        string status
+    }
+
+    ProgressUpdate {
+        int id PK
+        int problem_id FK
+        int developer_id FK
+        int milestone
+        text notes
+        string attachment_url
+        datetime updated_at
+    }
+
+    ChatMessage {
+        int id PK
+        int problem_id FK
+        int sender_id FK
+        text message
+        string file_url
+        datetime sent_at
+        boolean is_read
+    }
+
+    User ||--o{ Problem : posts
+    User ||--o{ Application : submits
+    User ||--o{ TeamMember : belongs_to
+    User ||--o{ ChatMessage : writes
+    User ||--o{ ProgressUpdate : makes
+    User ||--o{ EscrowTransaction : pays
+
+    Problem ||--o{ Application : receives
+    Problem ||--|| ProjectAgreement : has
+    Problem ||--o{ ChatMessage : contains
+    Problem ||--o{ ProgressUpdate : tracks
+
+    Team ||--o{ TeamMember : includes
+    Team ||--o{ Application : applies_as
+
+    EscrowTransaction ||--o{ PaystackWebhook : confirms
+```
+
+## 4. Use Case Diagram
+### Actor: Poster
+```Mermaid
+graph TD
+    subgraph Actor_Poster[Problem Poster]
+        UC1[Post a problem]
+        UC2[Assess project cost]
+        UC3[Pay 20% down payment]
+        UC4[Chat with developer]
+        UC5[Monitor progress]
+        UC6[Sign off on completion]
+    end
+
+
+    Poster --> UC1
+    Poster --> UC2
+    Poster --> UC3
+    Poster --> UC4
+    Poster --> UC5
+    Poster --> UC6
+
+```
+
+### Actor: Developer
+```Mermaid
+graph TD
+    subgraph Actor_Developer[Developer / Team]
+        UC7[Browse open problems]
+        UC8[Request to solve]
+        UC9[Create team / invite members]
+        UC10[Pay 20% down payment]
+        UC11[Update progress milestones]
+        UC12[Chat with poster & admin]
+    end
+
+    Developer --> UC7
+    Developer --> UC8
+    Developer --> UC9
+    Developer --> UC10
+    Developer --> UC11
+    Developer --> UC12
+
+```
+
+### Actor: Admin
+```Mermaid
+graph TD
+    subgraph Actor_Admin[Admin]
+        UC13[Verify Ghana Cards]
+        UC14[Approve developer applications]
+        UC15[Manage escrow - release/forfeit]
+        UC16[View any chat room]
+        UC17[Resolve disputes]
+        UC18[View analytics]
+    end
+
+    Admin --> UC13
+    Admin --> UC14
+    Admin --> UC15
+    Admin --> UC16
+    Admin --> UC17
+    Admin --> UC18
+
+```
