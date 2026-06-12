@@ -14,7 +14,7 @@
     * 1.4 Project Scope
     * 1.5 References
 2. Overall Description
-    * 2.1 Product Perspctive
+    * 2.1 Product Perspective
     * 2.2 Product Functions
     * 2.3 User Classes and Characteristics
     * 2.4 Operating Environment
@@ -31,7 +31,7 @@
     * 3.8 Admin Dashboard and Escrow Management
 4. External Interface Requirements
     * 4.1 User Interfaces
-    * Payment Interface (Paystack).
+    * 4.2 Payment Interface (Paystack).
     * 4.3 File Storage Interface
 5. Non-Functional Requirements
     * 5.1 Performance
@@ -76,8 +76,11 @@ Requirements are characterized as follows:
 | Stakeholder    | Role                                                                      |
 |----------------|---------------------------------------------------------------------------|
 | Panelist       |   Officials who will review and approve<br>the requirements               |
-| Development team      | Who will design and implement the system                           |
-| Problem Poster | Those researchers and individuals who has<br>software problems to be solved |
+| Developer (Individual)      | Skilled programmers seeking real-world projects, portfolio building,<br> and income through partnership.                        |
+| Problem Poster | Individuals, small businesses, researchers, or community groups who submit problems. |
+| Development Team | Groups of developers  who apply together. They value<br>collaboration and shared credit. |
+| Platform Owner / Investor | Funds, build, and serve as the administrators of the<br>platform and expects sustainability through escrow fees and future monetization. |
+| Paystack (Payment Partner) | External stakeholder that processes down payments, holds escrow funds,<br>and enables transfers. |
 
 ### 1.4 Project Scope
 #### In Scope:
@@ -100,14 +103,17 @@ Requirements are characterized as follows:
 * Advanced dispute resolution automation.
 
 ### 1.5 References
-* AfriSolve Hub Project Plan
-* Paystack API Documentation
+* AfriSolve Hub Project Plan - [Afrisolve Hub Project Plan](AfriSolve_Hub_Project_Plan.pdf)
+* Paystack API Documentation - https://paystack.com/docs
+* Django Documentation – https://docs.djangoproject.com
+* Django Channels Documentation – WebSockets (https://channels.readthedocs.io)
+* Cloudinary API Documentation - https://cloudinary.com/documentation
+* WeasyPrint Documentation - https://weasyprint.org
 
 ## 2. Overall Description
 ### 2.1 Product Perspective
 AfriSolve Hub is a standalone web application built on Python Django (backend + templating frontend). It integrates with:
 * Paystack for payments, escrow, and transfers.
-* SendGrid for Email messages
 * Cloudinary Spaces for file storage (Ghana Card images, attachments).
 
 ### 2.2 Product Functions (High-Level)
@@ -227,10 +233,10 @@ AfriSolve Hub is a standalone web application built on Python Django (backend + 
 
 ## 4. External Interface Requirements
 ### 4.1 User Interfaces
-* <br>Responsive Web:</br> Bootstrap 5, CSS, Javascript, Django templates.
-* <br>Public Board:</br> Card-based layout with filter sidebar.
-* <br>Dashboard (Poster/Developer):</br> List of assigned problems, progress bars, chat shortcut.
-* <br>Admin Interface:</br> Django admin customized plus custom views for escrow.
+* <b>Responsive Web:</b> Bootstrap 5, CSS, Javascript, Django templates.
+* <b>Public Board:</b> Card-based layout with filter sidebar.
+* <b>Dashboard (Poster/Developer):</b> List of assigned problems, progress bars, chat shortcut.
+* <b>Admin Interface:</b> Django admin customized plus custom views for escrow.
 
 ### 4.2 Payment Interface (Paystack)
 * Inline Checkout: Pop-up modal for card/mobile money.
@@ -302,27 +308,32 @@ Mermaid code snippet for generating diagram: [Down Payment and Escrow](<../code 
 
 ### Problem Lifecycle
 This section shows how problem passes through it flow from being posted by a problem poster to when it's finally handed over. <br>
-Mermaid code snippet for generating diagram: 
+Mermaid code snippet for generating diagram: [Problem Lifecycle](<../code snippets/problem_lifecycle.md>)
 ![Problem Lifecycle](<../images/Problem Lifecycle.svg>)
 
 
 ## 3. Entity Relationship Diagram (ERD)
 This section displays the various entities in the software's database and their relationship with each other. <br>
-Mermaid code snippet for generating diagram: [ERD](<../code snippets/ERD.md>)
+Mermaid code snippet for generating diagram: [Entity Relationship Diagram](<../code snippets/ERD.md>)
+
 
 
 
 ## 4. Use Case Diagram
 This section display use case diagrams for problem poster, developer/team, and admin.
 ## Poster
+Mermaid code snippet for generating diagram: [Poster Use Case Diagram](<../code snippets/problem_poster.md>)
 ![Poster](<../images/Problem Poster.svg>)
 
 ### Developer
+Mermaid code snippet for generating diagram: [Developer Use Case Diagram](<../code snippets/developer.md>)
 ![Developer](<../images/Developer or Team Poster.svg>)
 
 ### Admin
+Mermaid code snippet for generating diagram: [Admin Use Case Diagram](<../code snippets/admin.md>)
 ![Admin](<../images/Admin Poster.svg>)
 
 ## 5. Per-Problem Chat Architecture
-This sequence diagram shows how messages and files flow through the chat feature in this project.
+This sequence diagram shows how messages and files flow through the chat feature in this project. <br>
+Mermaid code snippet for generating diagram: [Per-Problem Chat Architecture](<../code snippets/per_problem_chat_architecture.md>)
 ![Per-Problem Chat Architecture](<../images/Per-Problem Chat Architecture.svg>)
