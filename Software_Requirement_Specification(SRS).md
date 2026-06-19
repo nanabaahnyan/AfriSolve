@@ -240,7 +240,7 @@ AfriSolve Hub is a standalone web application built on Python Django (backend + 
 ## 4. External Interface Requirements
 ### 4.1 User Interfaces
 * <b>Responsive Web:</b> Bootstrap 5, CSS, Javascript, Django templates.
-* <b>Public Board:</b> Card-based layout with filter sidebar.
+* <b>Public Board:</b> Card-based layout.
 * <b>Dashboard (Poster/Developer):</b> List of assigned problems, progress bars, chat shortcut.
 * <b>Admin Interface:</b> Django admin customized plus custom views for escrow.
 
