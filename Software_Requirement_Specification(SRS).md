@@ -46,7 +46,7 @@
     * 5.4 Usability & Accessibility
     * 5.5 Legal & Compliance (Ghana)
 6. Other Requirements (Training, Future APIs)
-8. Escrow & Forfeiture Decision Matrix
+7. Context Diagram
 <br><br>
 
 ## 1. Introduction
@@ -298,49 +298,9 @@ AfriSolve Hub is a standalone web application built on Python Django (backend + 
 * Public REST API for external problem sources (e.g., NGOs submitting problems).
 
 
-# Analysis Models
-## 1. Context Diagram 
+
+# 7. Context Diagram 
 This is a low level diagram showing the major features in the software project AfriSolve Hub. <br>
-Mermaid code snippet for generating diagram: [Code Snippet](<../code snippets/context_diagram.md>)
-![Context Diagram](<static/images/Context Diagram.svg>)
+![Context Diagram](static/images/afrisolve_context_diagram.svg)
 
 
-## 2. Process Flow Diagram 
-### Down Payment & Escrow
-This diagram displays the down payment system and Escrow feature embedded in the project. It shows the flow of meaning from whence concensus agreement is made between both party to when down payment is released to them or one party if forfeited. <br>
-Mermaid code snippet for generating diagram: [Down Payment and Escrow](<../code snippets/down_payment_and_escrow.md>)
-![Down Payment & Escrow](<static/images/Down Payment & Escrow.svg>)
-
-
-### Problem Lifecycle
-This section shows how problem passes through it flow from being posted by a problem poster to when it's finally handed over. <br>
-Mermaid code snippet for generating diagram: [Problem Lifecycle](<../code snippets/problem_lifecycle.md>)
-![Problem Lifecycle](<static/images/Problem Lifecycle.svg>)
-
-
-## 3. Entity Relationship Diagram (ERD)
-This section displays the various entities in the software's database and their relationship with each other. <br>
-Mermaid code snippet for generating diagram: [Entity Relationship Diagram](<../code snippets/ERD.md>)
-
-
-
-
-## 4. Use Case Diagram
-This section display use case diagrams for problem poster, developer/team, and admin.
-## Poster
-Mermaid code snippet for generating diagram: [Poster Use Case Diagram](<../code snippets/problem_poster.md>)
-![Poster](<static/images/Problem Poster.svg>)
-
-### Developer
-Mermaid code snippet for generating diagram: [Developer Use Case Diagram](<../code snippets/developer.md>)
-![Developer](<static/images/Developer or Team Poster.svg>)
-
-### Admin
-Mermaid code snippet for generating diagram: [Admin Use Case Diagram](<../code snippets/admin.md>)
-![Admin](<static/images/Admin Poster.svg>)
-
-
-## 5. Per-Problem Chat Architecture
-This sequence diagram shows how messages and files flow through the chat feature in this project. <br>
-Mermaid code snippet for generating diagram: [Per-Problem Chat Architecture](<../code snippets/per_problem_chat_architecture.md>)
-![Per-Problem Chat Architecture](<static/images/Per-Problem Chat Architecture.svg>)

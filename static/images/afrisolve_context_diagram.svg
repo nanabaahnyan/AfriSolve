@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1100" height="795" viewBox="0 0 1100 795" xmlns="http://www.w3.org/2000/svg" font-family="Arial,Helvetica,sans-serif">
+<defs>
+  <marker id="ai" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto">
+    <polygon points="0 0,9 3.5,0 7" fill="#1A4A7A"/></marker>
+  <marker id="ao" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto">
+    <polygon points="0 0,9 3.5,0 7" fill="#0A5C36"/></marker>
+</defs>
+<rect width="1100" height="795" fill="#F7F9FA"/>
+<rect x="9" y="9" width="1082" height="777" fill="none" stroke="#CDD4DA" stroke-width="1.5" rx="5"/>
+<text x="550" y="39" text-anchor="middle" font-size="17" font-weight="bold" fill="#1B2631">AfriSolve Hub — Context Diagram (Level 0 DFD)</text>
+<text x="550" y="57" text-anchor="middle" font-size="10" fill="#7F8C8D">Version 1.0 · ICTE 481B Advanced Software Development · University of Education, Winneba</text>
+<line x1="190" y1="65" x2="910" y2="65" stroke="#D5D8DC" stroke-width="0.8"/>
+<path d="M 217 192 Q 298 291 418 332" fill="none" stroke="#2471A3" stroke-width="1.6" marker-end="url(#ai)"/>
+<path d="M 418 332 Q 337 233 217 192" fill="none" stroke="#1A7A55" stroke-width="1.6" stroke-dasharray="5,3" marker-end="url(#ao)"/>
+<rect x="228" y="262" width="160" height="13" rx="2" fill="white" opacity="0.78"/>
+<text x="308" y="271" text-anchor="middle" font-size="9" fill="#154360">Registration · Problems · Payment</text>
+<rect x="273" y="233" width="114" height="13" rx="2" fill="white" opacity="0.78"/>
+<text x="330" y="242" text-anchor="middle" font-size="9" fill="#145A32">KYC · Progress · Escrow</text>
+<path d="M 870 203 Q 752 239 673 334" fill="none" stroke="#2471A3" stroke-width="1.6" marker-end="url(#ai)"/>
+<path d="M 673 334 Q 791 298 870 203" fill="none" stroke="#1A7A55" stroke-width="1.6" stroke-dasharray="5,3" marker-end="url(#ao)"/>
+<rect x="674" y="238" width="174" height="13" rx="2" fill="white" opacity="0.78"/>
+<text x="761" y="247" text-anchor="middle" font-size="9" fill="#154360">Registration · Application · Updates</text>
+<rect x="726" y="280" width="114" height="13" rx="2" fill="white" opacity="0.78"/>
+<text x="783" y="289" text-anchor="middle" font-size="9" fill="#145A32">KYC · Approval · Escrow</text>
+<path d="M 872 402 Q 789 342 690 382" fill="none" stroke="#2471A3" stroke-width="1.6" marker-end="url(#ai)"/>
+<path d="M 690 382 Q 776 442 872 402" fill="none" stroke="#1A7A55" stroke-width="1.6" stroke-dasharray="5,3" marker-end="url(#ao)"/>
+<rect x="711" y="351" width="151" height="13" rx="2" fill="white" opacity="0.78"/>
+<text x="786" y="360" text-anchor="middle" font-size="9" fill="#154360">Card+Dev Approval · Escrow Cmds</text>
+<rect x="707" y="415" width="146" height="13" rx="2" fill="white" opacity="0.78"/>
+<text x="780" y="424" text-anchor="middle" font-size="9" fill="#145A32">Queues · Dashboard · Analytics</text>
+<path d="M 870 595 Q 789 483 663 424" fill="none" stroke="#2471A3" stroke-width="1.6" marker-end="url(#ai)"/>
+<path d="M 663 424 Q 744 536 870 595" fill="none" stroke="#1A7A55" stroke-width="1.6" stroke-dasharray="5,3" marker-end="url(#ao)"/>
+<rect x="715" y="483" width="128" height="13" rx="2" fill="white" opacity="0.78"/>
+<text x="779" y="492" text-anchor="middle" font-size="9" fill="#154360">Webhooks · Transfer Events</text>
+<rect x="692" y="516" width="128" height="13" rx="2" fill="white" opacity="0.78"/>
+<text x="756" y="525" text-anchor="middle" font-size="9" fill="#145A32">Checkout · Transfer · Fees</text>
+<path d="M 552 640 Q 586 551 549 463" fill="none" stroke="#2471A3" stroke-width="1.6" marker-end="url(#ai)"/>
+<path d="M 549 463 Q 516 552 552 640" fill="none" stroke="#1A7A55" stroke-width="1.6" stroke-dasharray="5,3" marker-end="url(#ao)"/>
+<rect x="554" y="474" width="68" height="13" rx="2" fill="white" opacity="0.78"/>
+<text x="588" y="483" text-anchor="middle" font-size="9" fill="#154360">CDN File URLs</text>
+<rect x="435" y="563" width="151" height="13" rx="2" fill="white" opacity="0.78"/>
+<text x="510" y="572" text-anchor="middle" font-size="9" fill="#145A32">File Uploads (Card/Attach/Chat)</text>
+<path d="M 434 430 Q 331 491 270 595" fill="none" stroke="#1A7A55" stroke-width="1.6" stroke-dasharray="5,3" marker-end="url(#ao)"/>
+<rect x="267" y="491" width="151" height="13" rx="2" fill="white" opacity="0.78"/>
+<text x="342" y="500" text-anchor="middle" font-size="9" fill="#145A32">KYC · Progress · Payment Emails</text>
+<path d="M 403 379 Q 309 354 218 388" fill="none" stroke="#1A7A55" stroke-width="1.6" stroke-dasharray="5,3" marker-end="url(#ao)"/>
+<rect x="250" y="344" width="123" height="13" rx="2" fill="white" opacity="0.78"/>
+<text x="311" y="353" text-anchor="middle" font-size="9" fill="#145A32">Payment · Approval Alerts</text>
+<ellipse cx="545" cy="375" rx="142" ry="88" fill="#0E6655" stroke="#0A5C4A" stroke-width="2.5"/>
+<text x="545" y="353" text-anchor="middle" font-size="14" font-weight="bold" fill="white">AfriSolve Hub</text>
+<line x1="435" y1="365" x2="655" y2="365" stroke="white" stroke-width="0.5" opacity="0.4"/>
+<text x="545" y="380" text-anchor="middle" font-size="9" fill="white" opacity="0.93">Problem Marketplace · Ghana Card KYC</text>
+<text x="545" y="394" text-anchor="middle" font-size="9" fill="white" opacity="0.93">Escrow Management · Progress Tracking</text>
+<text x="545" y="408" text-anchor="middle" font-size="9" fill="white" opacity="0.93">Real-time Chat · Admin Dashboard</text>
+<rect x="28" y="92" width="198" height="100" rx="6" fill="#1B4F72" stroke="#0D3349" stroke-width="1.5"/>
+<text x="127" y="114" text-anchor="middle" font-size="12" font-weight="bold" fill="white">Problem Poster</text>
+<line x1="36" y1="122" x2="218" y2="122" stroke="white" stroke-width="0.5" opacity="0.35"/>
+<text x="127" y="138" text-anchor="middle" font-size="9.5" fill="white" opacity="0.9">Individual · Business</text>
+<text x="127" y="153" text-anchor="middle" font-size="9.5" fill="white" opacity="0.9">Researcher · NGO</text>
+<text x="127" y="168" text-anchor="middle" font-size="9.5" fill="white" opacity="0.9">Community Group</text>
+<rect x="870" y="90" width="200" height="120" rx="6" fill="#1B4F72" stroke="#0D3349" stroke-width="1.5"/>
+<text x="970" y="112" text-anchor="middle" font-size="12" font-weight="bold" fill="white">Developer / Team</text>
+<line x1="878" y1="120" x2="1062" y2="120" stroke="white" stroke-width="0.5" opacity="0.35"/>
+<text x="970" y="136" text-anchor="middle" font-size="9.5" fill="white" opacity="0.9">Individual Developer</text>
+<text x="970" y="151" text-anchor="middle" font-size="9.5" fill="white" opacity="0.9">Team Leader</text>
+<text x="970" y="166" text-anchor="middle" font-size="9.5" fill="white" opacity="0.9">Team Member</text>
+<rect x="872" y="362" width="200" height="96" rx="6" fill="#1B4F72" stroke="#0D3349" stroke-width="1.5"/>
+<text x="972" y="384" text-anchor="middle" font-size="12" font-weight="bold" fill="white">Admin / Operator</text>
+<line x1="880" y1="392" x2="1064" y2="392" stroke="white" stroke-width="0.5" opacity="0.35"/>
+<text x="972" y="408" text-anchor="middle" font-size="9.5" fill="white" opacity="0.9">Platform Staff</text>
+<text x="972" y="423" text-anchor="middle" font-size="9.5" fill="white" opacity="0.9">Escrow Manager</text>
+<text x="972" y="438" text-anchor="middle" font-size="9.5" fill="white" opacity="0.9">Dispute Arbitrator</text>
+<rect x="835" y="595" width="200" height="90" rx="6" fill="#6C3483" stroke="#5B2C6F" stroke-width="1.5"/>
+<text x="935" y="617" text-anchor="middle" font-size="12" font-weight="bold" fill="white">Paystack</text>
+<line x1="843" y1="625" x2="1027" y2="625" stroke="white" stroke-width="0.5" opacity="0.35"/>
+<text x="935" y="641" text-anchor="middle" font-size="9.5" fill="white" opacity="0.9">Payment Gateway</text>
+<text x="935" y="656" text-anchor="middle" font-size="9.5" fill="white" opacity="0.9">Mobile Money · Cards · USSD</text>
+<text x="935" y="671" text-anchor="middle" font-size="9.5" fill="white" opacity="0.9">Transfers API</text>
+<rect x="455" y="640" width="196" height="70" rx="6" fill="#784212" stroke="#6E2C00" stroke-width="1.5"/>
+<text x="553" y="662" text-anchor="middle" font-size="12" font-weight="bold" fill="white">Cloudinary</text>
+<line x1="463" y1="670" x2="643" y2="670" stroke="white" stroke-width="0.5" opacity="0.35"/>
+<text x="553" y="686" text-anchor="middle" font-size="9.5" fill="white" opacity="0.9">File &amp; Image Storage</text>
+<text x="553" y="701" text-anchor="middle" font-size="9.5" fill="white" opacity="0.9">CDN Delivery</text>
+<rect x="115" y="595" width="200" height="90" rx="6" fill="#1A5276" stroke="#154360" stroke-width="1.5"/>
+<text x="215" y="617" text-anchor="middle" font-size="12" font-weight="bold" fill="white">Email Service</text>
+<line x1="123" y1="625" x2="307" y2="625" stroke="white" stroke-width="0.5" opacity="0.35"/>
+<text x="215" y="641" text-anchor="middle" font-size="9.5" fill="white" opacity="0.9">Django SMTP Backend</text>
+<text x="215" y="656" text-anchor="middle" font-size="9.5" fill="white" opacity="0.9">Notification Delivery</text>
+<text x="215" y="671" text-anchor="middle" font-size="9.5" fill="white" opacity="0.9">(Transactional Email)</text>
+<rect x="22" y="348" width="196" height="90" rx="6" fill="#922B21" stroke="#7B241C" stroke-width="1.5"/>
+<text x="120" y="370" text-anchor="middle" font-size="12" font-weight="bold" fill="white">Africa's Talking</text>
+<line x1="30" y1="378" x2="210" y2="378" stroke="white" stroke-width="0.5" opacity="0.35"/>
+<text x="120" y="394" text-anchor="middle" font-size="9.5" fill="white" opacity="0.9">SMS Gateway</text>
+<text x="120" y="409" text-anchor="middle" font-size="9.5" fill="white" opacity="0.9">Ghana Numbers</text>
+<text x="120" y="424" text-anchor="middle" font-size="9.5" fill="white" opacity="0.9">(Optional)</text>
+<rect x="15" y="728" width="1070" height="30" rx="3" fill="#EBF5FB" opacity="0.7"/>
+<text x="24" y="748" font-size="9" font-weight="bold" fill="#7F8C8D">Legend:</text>
+<rect x="74" y="738" width="13" height="10" fill="#1B4F72" rx="2"/>
+<text x="91" y="747" font-size="9" fill="#5D6D7E">Human Actor</text>
+<rect x="176" y="738" width="13" height="10" fill="#0E6655" rx="2"/>
+<text x="193" y="747" font-size="9" fill="#5D6D7E">AfriSolve Hub System</text>
+<rect x="332" y="738" width="13" height="10" fill="#6C3483" rx="2"/>
+<text x="349" y="747" font-size="9" fill="#5D6D7E">Payment System</text>
+<rect x="452" y="738" width="13" height="10" fill="#784212" rx="2"/>
+<text x="469" y="747" font-size="9" fill="#5D6D7E">Storage Service</text>
+<rect x="578" y="738" width="13" height="10" fill="#1A5276" rx="2"/>
+<text x="595" y="747" font-size="9" fill="#5D6D7E">Email Service</text>
+<rect x="692" y="738" width="13" height="10" fill="#922B21" rx="2"/>
+<text x="709" y="747" font-size="9" fill="#5D6D7E">SMS Service</text>
+<line x1="655" y1="743" x2="679" y2="743" stroke="#2471A3" stroke-width="1.8" marker-end="url(#ai)"/>
+<text x="683" y="747" font-size="9" fill="#5D6D7E">Data into System</text>
+<line x1="780" y1="743" x2="804" y2="743" stroke="#1A7A55" stroke-width="1.8" stroke-dasharray="4,3" marker-end="url(#ao)"/>
+<text x="808" y="747" font-size="9" fill="#5D6D7E">Data from System</text>
+</svg>
