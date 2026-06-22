@@ -31,3 +31,22 @@ class NotificationDetailView(generics.RetrieveUpdateDestroyAPIView):
         if not self.request.user.is_staff:
             raise PermissionDenied("Only admins can delete notifications.")
         instance.delete()
+
+
+# ==========================================
+# Native Django Template / SSR Frontend Views
+# ==========================================
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def notification_list_view(request):
+    notifications = Notification.objects.filter(user=request.user).order_by('-created_at')
+    
+    # Mark all as read when user visits this page
+    Notification.objects.filter(user=request.user, is_read=False).update(is_read=True)
+    
+    return render(request, 'notifications/list.html', {
+        'notifications': notifications
+    })
+

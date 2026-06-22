@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Notifications — AfriSolve{% endblock %}
+{% block content %}
+<div class="page-container" style="max-width: 800px; margin: 0 auto; padding-top: 2.5rem; padding-bottom: 3rem;">
+    <div style="margin-bottom: 2rem;">
+        <h1 class="section-title" style="margin-bottom: 0.4rem;">Notifications</h1>
+        <p style="color: var(--text-muted); font-size: 0.95rem;">Stay updated on your active applications, escrow payments, and chat activities.</p>
+    </div>
+
+    <!-- Notifications Card -->
+    <div class="card animate-fade" style="padding: 1.5rem 2rem;">
+        {% if notifications %}
+            <div style="display: flex; flex-direction: column;">
+                {% for notification in notifications %}
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; padding: 1.25rem 0; {% if not forloop.last %}border-bottom: 1px solid var(--border);{% endif %} gap: 1rem;">
+                        <div style="display: flex; gap: 1rem; align-items: flex-start;">
+                            <span style="font-size: 1.5rem; margin-top: 0.1rem; line-height: 1;">
+                                {% if "escrow" in notification.message.lower or "payment" in notification.message.lower %}
+                                    💳
+                                {% elif "chat" in notification.message.lower or "message" in notification.message.lower %}
+                                    💬
+                                {% elif "verify" in notification.message.lower or "approved" in notification.message.lower %}
+                                    ✅
+                                {% else %}
+                                    🔔
+                                {% endif %}
+                            </span>
+                            <div>
+                                <p style="color: var(--text); font-size: 0.95rem; line-height: 1.5; margin-bottom: 0.25rem;">
+                                    {{ notification.message }}
+                                </p>
+                                <span style="color: var(--text-muted); font-size: 0.8rem;">
+                                    {{ notification.created_at|timesince }} ago
+                                </span>
+                            </div>
+                        </div>
+                        {% if not notification.is_read %}
+                            <span class="badge badge-assigned" style="padding: 0.15rem 0.45rem; font-size: 0.65rem;">New</span>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <!-- Empty State -->
+            <div style="text-align: center; padding: 3rem 1rem;">
+                <div style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.3;">🔔</div>
+                <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--text); margin-bottom: 0.25rem;">All caught up!</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">You don't have any notifications right now.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

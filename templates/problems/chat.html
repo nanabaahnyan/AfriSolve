@@ -147,12 +147,12 @@
           <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.4rem;">
             <span style="font-size:1.1rem;">💰</span>
             <strong style="color:var(--text-primary);font-size:0.875rem;">Escrow: <span style="color:var(--accent);">{{ escrow.agreed_cost|floatformat:0 }} GHS</span></strong>
-            <span class="escrow-badge
-              {% if escrow.status == 'proposed' %}bg-amber-100" style="background:#fef3c7;color:#92400e;border:1px solid #fbbf24;
-              {% elif escrow.status == 'agreed' %}style="background:#dbeafe;color:#1e40af;border:1px solid #60a5fa;
-              {% elif escrow.status == 'fully_funded' %}style="background:#dcfce7;color:#166534;border:1px solid #4ade80;
-              {% elif escrow.status == 'completed' %}style="background:#6366f1;color:#fff;
-              {% else %}style="background:#fee2e2;color:#991b1b;border:1px solid #f87171;
+            <span class="escrow-badge" style="
+              {% if escrow.status == 'proposed' %}background:#fef3c7;color:#92400e;border:1px solid #fbbf24;
+              {% elif escrow.status == 'agreed' %}background:#dbeafe;color:#1e40af;border:1px solid #60a5fa;
+              {% elif escrow.status == 'fully_funded' %}background:#dcfce7;color:#166534;border:1px solid #4ade80;
+              {% elif escrow.status == 'completed' %}background:#6366f1;color:#fff;
+              {% else %}background:#fee2e2;color:#991b1b;border:1px solid #f87171;
               {% endif %}">
               {{ escrow.status|title }}
             </span>

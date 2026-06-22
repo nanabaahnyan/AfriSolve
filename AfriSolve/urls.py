@@ -44,6 +44,7 @@ urlpatterns = [
     path("problems/", include("problems.template_urls")),
     path("teams/", include("teams.template_urls")),
     path("users/", include("users.template_urls")),
+    path("notifications/", include("notifications.template_urls")),
 
     # REST API Routes (Used by AJAX components)
     path("api/users/", include("users.urls")),

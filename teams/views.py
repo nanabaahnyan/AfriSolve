@@ -276,8 +276,98 @@ class PendingTeamsView(generics.ListAPIView):
 # ──────────────────────────────────────────────
 # Template (SSR) Views
 # ──────────────────────────────────────────────
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from .forms import TeamForm
+
+
+@login_required
+def team_create_view(request):
+    user = request.user
+    if user.role != 'developer' and not user.is_staff:
+        messages.error(request, "Only developers can create teams.")
+        return redirect("dashboard")
+
+    if user_in_active_team(user):
+        messages.error(request, "You are already in an active team.")
+        return redirect("dashboard")
+
+    # Check if user already has a pending/draft team they lead
+    existing = Team.objects.filter(leader=user, status__in=['draft', 'pending_admin']).first()
+    if existing:
+        messages.error(request, f"You already have a pending team '{existing.name}'. Wait for it to be resolved before creating another.")
+        return redirect("dashboard")
+
+    if request.method == "POST":
+        form = TeamForm(request.POST)
+        if form.is_valid():
+            # Process member usernames
+            raw_usernames = form.cleaned_data.get("member_usernames", "")
+            member_usernames = [u.strip() for u in raw_usernames.split(",") if u.strip()]
+            
+            # Remove self
+            member_usernames = [u for u in member_usernames if u != user.username]
+            
+            # Validate members
+            members = []
+            has_error = False
+            for username in member_usernames:
+                try:
+                    member = CustomUser.objects.get(username=username, role='developer')
+                except CustomUser.DoesNotExist:
+                    messages.error(request, f"Developer '{username}' not found. Only registered developers can join teams.")
+                    has_error = True
+                    break
+
+                if user_in_active_team(member):
+                    messages.error(request, f"'{username}' is already in an active team.")
+                    has_error = True
+                    break
+
+                pending_invite = TeamInvitation.objects.filter(invitee=member, status='pending').first()
+                if pending_invite:
+                    messages.error(request, f"'{username}' already has a pending invitation for team '{pending_invite.team.name}'.")
+                    has_error = True
+                    break
+
+                members.append(member)
+
+            if not has_error:
+                # Create the team
+                team = form.save(commit=False)
+                team.leader = user
+                team.status = 'draft'
+                team.save()
+
+                # Create invitations
+                for member in members:
+                    TeamInvitation.objects.create(team=team, invitee=member)
+                    Notification.objects.create(
+                        user=member,
+                        message=f"🤝 {user.username} has invited you to join the team '{team.name}'. Go to your dashboard to accept or decline."
+                    )
+
+                if not members:
+                    team.status = 'pending_admin'
+                    team.save()
+                    TeamMembership.objects.create(team=team, developer=user, role='Team Lead')
+                    
+                    # Notify admin
+                    for admin in CustomUser.objects.filter(role='admin'):
+                        Notification.objects.create(
+                            user=admin,
+                            message=f"📋 A new solo team '{team.name}' by {user.username} is awaiting approval."
+                        )
+                    messages.success(request, f"Team '{team.name}' created and sent to admin for approval.")
+                else:
+                    messages.success(request, f"Team '{team.name}' created and invitations sent to proposed members.")
+                
+                return redirect("dashboard")
+    else:
+        form = TeamForm()
+
+    return render(request, "teams/create.html", {"form": form})
 
 
 @login_required
