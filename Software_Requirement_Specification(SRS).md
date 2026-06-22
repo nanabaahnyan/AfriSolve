@@ -5,6 +5,7 @@
 <b>Version:</b> 1.0 <br>
 <b>Date:</b> June 19, 2026<br>
 <b>Status:</b> Draft <br>
+<b>Github Repository link: </b> https://github.com/nanabaahnyan/AfriSolve/blob/main/Software_Requirement_Specification(SRS).md <br>
 
 ## Group Members
 | S/N            | Name                 | Index Number         |      
